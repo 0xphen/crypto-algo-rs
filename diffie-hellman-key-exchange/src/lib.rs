@@ -3,6 +3,7 @@ use rand::prelude::*;
 struct SimpleDiffieHellman {
     // secret private key
     pub pk: u32,
+
     // The primitive root or generator
     pub g: u32,
 
