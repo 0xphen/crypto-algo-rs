@@ -1,6 +1,23 @@
 pub struct MRPT;
 
 impl MRPT {
+    pub fn is_prime(p: u32) -> bool {
+        //Step 1: derive m and k
+        let (_k, m) = MRPT::derive_k_and_m(p);
+
+        // step 2: select a
+        // we choose any value of a in the range 1 < a < p - 1.
+        let a = 2;
+
+        // step 3: derive b
+        let b = MRPT::derive_b(a, m, p);
+        println!("SEE: {:?}", b);
+        if b == 1 {
+            return false;
+        }
+
+        return true;
+    }
     /// Step 1: Derive the values for m and k
     /// using the formula n-1 = 2^k * m.
     ///
@@ -13,8 +30,8 @@ impl MRPT {
     /// * `k` - the calculated value of k
     /// * `m` - the calculated value of m
     pub fn derive_k_and_m(p: u32) -> (u32, u32) {
-        let mut k: u32 = 1;
-        let mut m: u32 = 0;
+        let k: u32;
+        let m: u32;
 
         // Closure to solve the equation `n-1/2^k`
         // It returns a tuple containing two values: `m` and `k` respectively.
@@ -94,5 +111,13 @@ mod tests {
         let b = MRPT::derive_b(2, m, p);
 
         assert_eq!(b, 1);
+    }
+
+    #[test]
+    fn test_is_prime() {
+        let p = 7;
+        let is_prime = MRPT::is_prime(p);
+
+        assert_eq!(is_prime, false);
     }
 }
