@@ -7,16 +7,16 @@ impl MRPT {
         //Step 1: derive m and k
         let (k, m) = MRPT::derive_k_and_m(p);
 
-        // step 2: select a
+        // step 2: select `a`
         // we choose any value of a in the range 1 < a < p - 1.
         let a = 2;
 
         // step 3: derive b
         let (n, i) = MRPT::derive_b(a, m, k, p);
 
-        // If `i`, then `n` can be either -1 or 1,
-        // and this means `p` is a prime number.
-        // If `i` > 1, then `p` is prime is `n` == -1
+        // If `i` == 1, then `n` can be either -1 or 1,
+        // and this means `p` is a probably a prime number.
+        // If `i` > 1, then `p` is probably prime if `n` == -1
         if i == 1 && (n == 1 || n == -1) || (i != 1 && n == -1) {
             return true;
         }
@@ -41,7 +41,6 @@ impl MRPT {
 
         // Closure to solve the equation `n-1/2^k`
         // It returns a tuple containing two values: `m` and `k` respectively.
-        // a and b represents `n-1` and k respectively.
         let k_and_m = |a: u32, b: u32| -> f32 {
             let m = (a as f32 / (2_f32.powf(b as f32))) as f32;
             m
