@@ -1,5 +1,6 @@
 [workspace]
 resolver = "2"
 members = [
-  "diffie-hellman-key-exchange"
+  "diffie-hellman-key-exchange",
+  "miller-rabin-primality-test"
 ]
