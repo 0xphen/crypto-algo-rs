@@ -1,4 +1,4 @@
-// use std::slice::range;
+use crypto_bigint::{Wrapping, U256};
 
 pub struct MRPT;
 
@@ -39,29 +39,26 @@ impl MRPT {
         let k: u32;
         let m: u32;
 
-        // Closure to solve the equation `n-1/2^k`
-        // It returns a tuple containing two values: `m` and `k` respectively.
-        let k_and_m = |a: u32, b: u32| -> f32 {
-            let m = (a as f32 / (2_f32.powf(b as f32))) as f32;
-            m
-        };
-
         let mut temp_k: u32 = 0;
-        let mut temp_m: f32 = 0.0;
+        let mut temp_m: u32 = 0;
+        let n = p - 1;
 
         loop {
-            let a = k_and_m(p - 1, temp_k + 1);
-            // If a is not an integer, then we set `m` to the previous value
-            //of m `temp_m`, and `k` to the previous value of k `temp_k`
-            if a.fract() > 0.0 {
-                k = temp_k;
-                m = temp_m as u32;
-                break;
+            // To derive `m` and `k`, we use the formula: `n-1/2^k`.
+            // If the result is a floating number, then `m` and `k` will
+            // be the previous values of `temp_m` and `temp_k`.
+            // To check if `n-1/2^k` is a float, we take the modulus of
+            // `n mod 2^k-1`.
+            if n % (2_u32.pow(temp_k + 1)) == 0 {
+                temp_m = n / 2_u32.pow(temp_k + 1);
+                temp_k += 1;
+
+                continue;
             }
 
-            // Increment k (`temp_k`)
-            temp_k += 1;
-            temp_m = a;
+            k = temp_k;
+            m = temp_m;
+            break;
         }
 
         (k, m)
