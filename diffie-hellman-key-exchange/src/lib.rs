@@ -1,18 +1,20 @@
-use rand::prelude::*;
+use num_bigint::{BigUint, RandBigInt};
+use num_traits::Pow;
 
+#[derive(Debug, Clone)]
 struct SimpleDiffieHellman {
     // secret private key
-    pub pk: u32,
+    pub pk: BigUint,
 
     // The primitive root or generator
-    pub g: u32,
+    pub g: BigUint,
 
     // The prime number
-    pub p: u32,
+    pub p: BigUint,
 }
 
 impl SimpleDiffieHellman {
-    pub fn new(g: u32, p: u32) -> Self {
+    pub fn new(g: BigUint, p: BigUint) -> Self {
         SimpleDiffieHellman {
             g,
             p,
@@ -20,18 +22,19 @@ impl SimpleDiffieHellman {
         }
     }
 
-    pub fn gen_pk() -> u32 {
+    pub fn gen_pk() -> BigUint {
         let mut rng = rand::thread_rng();
-        rng.gen_range(1..=20)
+        rng.gen_biguint(100)
     }
 
     // The public key is derived `Generator^Private_Key MOD Prime`
-    pub fn gen_public_key(&self) -> u32 {
-        (self.g ^ self.pk) % self.p
+    pub fn gen_public_key(&self) -> BigUint {
+        // (self.g ^ self.pk) % self.p
+        (self.g.clone().pow(self.pk.clone())).modpow(&BigUint::from(1u32), &self.p)
     }
     // The shared secret is derived `Public_Key^Private_Key MOD Prime`
-    pub fn calculate_shared_secret(&self, public_key: u32) -> u32 {
-        (public_key ^ self.pk) % self.p
+    pub fn calculate_shared_secret(&self, public_key: BigUint) -> BigUint {
+        (public_key.pow(self.pk.clone())).modpow(&BigUint::from(1u32), &self.p)
     }
 }
 
@@ -39,13 +42,11 @@ impl SimpleDiffieHellman {
 mod tests {
     use super::*;
 
-    const G: u32 = 2;
-    const P: u32 = 5;
-
     #[test]
     fn test_simple_diffie_hellman() {
-        let alice = SimpleDiffieHellman::new(G, P);
-        let bob = SimpleDiffieHellman::new(G, P);
+        let alice = SimpleDiffieHellman::new(BigUint::from(7_u32), BigUint::from(11_u32));
+
+        let bob = alice.clone();
 
         let alice_public_key = alice.gen_public_key();
 
@@ -55,6 +56,9 @@ mod tests {
 
         let bob_version_of_shared_secret = bob.calculate_shared_secret(alice_public_key);
 
-        assert_eq!(alice_version_of_shared_secret, bob_version_of_shared_secret);
+        assert_eq!(
+            alice_version_of_shared_secret.eq(&bob_version_of_shared_secret),
+            true
+        );
     }
 }
