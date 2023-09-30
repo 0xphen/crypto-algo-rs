@@ -29,7 +29,6 @@ impl SimpleDiffieHellman {
 
     // The public key is derived `Generator^Private_Key MOD Prime`
     pub fn gen_public_key(&self) -> BigUint {
-        // (self.g ^ self.pk) % self.p
         (self.g.clone().pow(self.pk.clone())).modpow(&BigUint::from(1u32), &self.p)
     }
     // The shared secret is derived `Public_Key^Private_Key MOD Prime`
