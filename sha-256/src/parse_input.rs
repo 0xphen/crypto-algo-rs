@@ -2,6 +2,11 @@
 /// And pads the binary to be a multiple of 512 (for SHA-256). For compactness,
 /// we represent the message in hex.
 pub mod msg_parsing_and_padding {
+    pub fn parse_and_pad_msg(message: &str) -> String {
+        let msg_binary = convert_msg_to_binary(message);
+        pad_binary(msg_binary.as_str())
+    }
+    
     /// Convert an input to binary
     ///
     /// # Arguments
