@@ -2,9 +2,35 @@
 /// And pads the binary to be a multiple of 512 (for SHA-256). For compactness,
 /// we represent the message in hex.
 pub mod preprocess {
-    pub fn preprocess_message(message: &str) -> String {
-        let msg_binary = convert_msg_to_binary(message);
-        pad_binary(msg_binary.as_str())
+
+    pub enum Format {
+        HEX,
+        BINARY,
+    }
+
+    pub fn preprocess_message(message: &str, f: Format) -> String {
+        let mut msg_binary = String::new();
+
+        match f {
+            Format::BINARY => {
+                msg_binary = convert_msg_to_binary(message);
+                pad_binary(msg_binary.as_str())
+            }
+            Format::HEX => {
+                msg_binary = convert_hex_to_binary(message);
+                pad_binary(msg_binary.as_str())
+            }
+        }
+    }
+
+    /// Converts a hexadecimal value to its binary representation
+    fn convert_hex_to_binary(hex_str: &str) -> String {
+        hex_str
+            .chars()
+            .collect::<Vec<_>>()
+            .iter()
+            .map(|c| format!("{:04b}", c.to_digit(16).expect("Failed to parse hex")))
+            .collect::<String>()
     }
 
     /// Convert an input to binary
