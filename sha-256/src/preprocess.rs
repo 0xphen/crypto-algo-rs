@@ -1,12 +1,12 @@
 /// This module parses an input data to its corresponding binary representation.
 /// And pads the binary to be a multiple of 512 (for SHA-256). For compactness,
 /// we represent the message in hex.
-pub mod msg_parsing_and_padding {
-    pub fn parse_and_pad_msg(message: &str) -> String {
+pub mod preprocess {
+    pub fn preprocess_message(message: &str) -> String {
         let msg_binary = convert_msg_to_binary(message);
         pad_binary(msg_binary.as_str())
     }
-    
+
     /// Convert an input to binary
     ///
     /// # Arguments
@@ -57,12 +57,13 @@ pub mod msg_parsing_and_padding {
         use super::*;
 
         #[test]
-        fn message_to_binary() {
+        fn preprocess_message() {
+            let message = "hello world";
             let msg_to_binary = "0110100001100101011011000110110001101111001000000111011101101111011100100110110001100100";
 
             let padded_msg = format!("{}{}", msg_to_binary, "1000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001011000");
 
-            let binary = convert_msg_to_binary("hello world");
+            let binary = convert_msg_to_binary(message);
             assert_eq!(binary, msg_to_binary);
 
             let padded_binary = pad_binary(&binary);
