@@ -4,19 +4,12 @@
 /// 2. Parsing the message into message blocks.
 /// 3. Setting the initial hash value `H_0`.
 pub mod preprocess {
-    use crate::constants;
-
     const BLOCK_SIZE: usize = 64;
     const CHUNK_SIZE: usize = 4;
 
     #[derive(Debug)]
-    /// Represents the result of the preprocessing step in XYZ algorithm.
-    pub struct PreprocessResult {
-        pub initial_hash_value: String,
-
-        /// The message after preprocessing, divided into blocks.
-        pub preprocessed_msg: Vec<[[u8; 4]; 16]>,
-    }
+    /// Represents the result of the preprocessing step.
+    pub struct PreprocessResult(pub Vec<[[u8; 4]; 16]>);
 
     /// Converts a message to binary and pads the binary to SHA-256 specifications.
     ///
@@ -31,10 +24,7 @@ pub mod preprocess {
 
         let preprocessed_msg = generate_message_blocks(padded_msg);
 
-        return PreprocessResult {
-            initial_hash_value: constants::H_0.to_string(),
-            preprocessed_msg,
-        };
+        return PreprocessResult(preprocessed_msg);
     }
 
     /// Prepares a message for SHA-256 hashing by performing the initial padding.
@@ -63,6 +53,7 @@ pub mod preprocess {
     /// ```
     pub fn initial_sha256_padding(message: &str) -> Vec<u8> {
         let mut buffer = message.as_bytes().to_vec();
+        // TODO: Potential error, look into this...
         buffer.push(0x80); // Append 1 bit (0x80 in byte form)
 
         // Calculate how many zero bytes we need to add so
@@ -104,6 +95,33 @@ pub mod preprocess {
                 array_block
             })
             .collect()
+    }
+
+    /// Converts a 32-bit hexadecimal string into a 4-byte array.
+    ///
+    /// # Arguments
+    /// * `h` - A 32-bit hexadecimal string.
+    ///
+    /// # Returns
+    /// A 4-byte array representing the hexadecimal string.
+    ///
+    /// # Panics
+    /// Panics if the input string `h` is not 8 characters long,
+    /// or if the string cannot be converted to a byte array.
+    pub fn h_to_byte_array(h: &str) -> [u8; 4] {
+        if h.len() != 8 {
+            panic!("Constant {:?} has wrong length", h);
+        }
+
+        let mut bytes = [0u8; 4];
+        for i in 0..4 {
+            let start = i * 2;
+            let end = start + 2;
+            let slice = &h[start..end];
+            bytes[i] = u8::from_str_radix(slice, 16).expect("Failed to convert to hexadecimal");
+        }
+
+        bytes
     }
 
     #[cfg(test)]

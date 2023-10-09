@@ -106,4 +106,10 @@ mod tests {
         let result = add_mod_2_32([12, 10, 32, 6], [0, 4, 8, 2]);
         assert_eq!(result, [12, 14, 40, 8]);
     }
+
+    // #[test]
+    // fn mod_32() {
+    //     let result = add_mod_2_32([1, 143, 233, 5], [82, 101, 104, 66]);
+    //     assert_eq!(result, [83, 245, 81, 71]);
+    // }
 }
