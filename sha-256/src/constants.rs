@@ -16,7 +16,7 @@ pub const H_7: &'static str = "5be0cd19";
 // the fractional parts  of the cubic roots of the first
 // 64 prime numbers. They are hardcoded and have been
 // defined by NIST (https://csrc.nist.gov/pubs/fips/180-4/upd1/final).
-pub const k: [&'static str; 64] = [
+pub const K: [&'static str; 64] = [
     "0x428a2f98",
     "0x71374491",
     "0xb5c0fbcf",

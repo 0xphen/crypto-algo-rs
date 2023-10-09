@@ -6,14 +6,13 @@
 pub mod preprocess {
     use crate::constants;
 
-    const CHUNK_SIZE: usize = 32;
-    const BLOCK_SIZE: usize = 512;
+    const BLOCK_SIZE: usize = 64;
+    const CHUNK_SIZE: usize = 4;
 
     #[derive(Debug)]
     pub struct PreprocessResult {
-        pub processed_msg: String,
         pub initial_hash_value: String,
-        pub msg_blocks: Vec<Vec<String>>,
+        pub preprocessed_msg: Vec<Vec<Vec<u8>>>,
     }
 
     /// Converts a message to binary and pads the binary to SHA-256 specifications.
@@ -25,106 +24,81 @@ pub mod preprocess {
     /// # Returns
     /// A PreprocessResult.
     pub fn preprocess_message(message: &str) -> PreprocessResult {
-        let mut msg_binary = String::new();
+        let padded_msg = initial_sha256_padding(message);
 
-        let padded_msg = pad_binary(convert_msg_to_binary(message).as_str());
-
-        let msg_blocks = generate_message_blocks(&padded_msg);
+        let preprocessed_msg = generate_message_blocks(padded_msg);
 
         return PreprocessResult {
-            processed_msg: padded_msg,
             initial_hash_value: constants::H_0.to_string(),
-            msg_blocks,
+            preprocessed_msg,
         };
     }
 
-    /// Converts a hexadecimal value to its binary representation
+    /// Prepares a message for SHA-256 hashing by performing the initial padding.
+    ///
+    /// This function implements the first phase of the SHA-256 preprocessing,
+    /// where the input message undergoes the following transformations:
+    /// 1. A '1' bit is appended to the end.
+    /// 2. '0' bits are appended to make the total length congruent to 448 (mod 512).
+    /// 3. The 64-bit big-endian representation of the original message length (in bits) is appended.
     ///
     /// # Arguments
-    /// * `hex_str` - Hexadecimal value
+    ///
+    /// * `message` - A string slice containing the message to be padded.
     ///
     /// # Returns
-    /// The binary representation of `hex_str`
-    fn convert_hex_to_binary(hex_str: &str) -> String {
-        hex_str
-            .chars()
-            .collect::<Vec<_>>()
-            .iter()
-            .map(|c| format!("{:04b}", c.to_digit(16).expect("Failed to parse hex")))
-            .collect::<String>()
+    ///
+    /// A `Vec<u8>` containing the message after the initial padding, ready for further SHA-256 processing.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    ///  use sha_256::preprocess::preprocess::initial_sha256_padding;
+    ///
+    /// let message = "Hello";
+    /// let padded = initial_sha256_padding(message);
+    /// ```
+    pub fn initial_sha256_padding(message: &str) -> Vec<u8> {
+        let mut buffer = message.as_bytes().to_vec();
+        buffer.push(0x80); // Append 1 bit (0x80 in byte form)
+
+        // Calculate how many zero bytes we need to add so
+        // that the current length is congruent to 448 mod 512
+        let zero_bytes_to_add = (56 - (buffer.len() % 64)) % 64;
+
+        // Add the required zero bytes
+        buffer.extend(vec![0u8; zero_bytes_to_add]);
+
+        // Append the original length of the message, in bits, as a 64-bit big-endian value
+        let original_bit_len = (message.len() as u64) * 8; // convert byte length to bit length
+        buffer.extend(original_bit_len.to_be_bytes().iter());
+
+        buffer
     }
 
-    /// Convert an input to binary
+    /// Splits the padded message into blocks suitable for SHA-256 processing.
+    ///
+    /// The message, after padding, is divided into multiple 512-bit blocks.
+    /// Each 512-bit block is further divided into sixteen 32-bit word blocks.
     ///
     /// # Arguments
     ///
-    /// * `message` - the input data
+    /// * `msg_pad` - A `Vec<u8>` containing the message after SHA-256 padding.
     ///
     /// # Returns
-    /// A binary representation of the `message`
-    fn convert_msg_to_binary(message: &str) -> String {
-        message
-            .as_bytes()
-            .into_iter()
-            .map(|byte| format!("{:08b}", byte))
-            .collect::<String>()
-    }
-
-    /// Pad the binary to the right as follows:
-    /// append `1`,
-    /// append K `0's`, where k = (448 - L - 1) mod 512.
-    /// append the length `L` of the binary, where L has been converted to binary
-    /// and is a 64-bit representation of the length.
     ///
-    /// # Arguments
+    /// A `Vec<Vec<u8>>` where the outer vector contains 512-bit blocks, and each inner vector represents a 32-bit word block.
     ///
-    /// * `b` - the binary
+    /// # Notes
     ///
-    /// # Returns
-    /// The padded binary
-    fn pad_binary(b: &str) -> String {
-        let mut padded_binary = format!("{}{}", b, 1); // append 1 to the binary
-        let k = (448 - b.len() - 1) % 512;
-        padded_binary = format!("{}{}", padded_binary, "0".repeat(k)); // append k 0's to the binary
-
-        let b_len_in_binary = format!("{:b}", b.len());
-        // Create a 64-bit representation of the length of the binary
-        let padded_b_length = format!(
-            "{}{}",
-            "0".repeat(64 - b_len_in_binary.len()),
-            b_len_in_binary
-        );
-
-        padded_binary = format!("{}{}", padded_binary, padded_b_length); // append the 64-bit length to the binary.
-        return padded_binary;
-    }
-
-    /// The message and its padding is parsed into N 512-bit blocks.
-    /// And each 512-bit block is further parsed into sixteen 32-bit blocks.
-    ///
-    /// # Arguments
-    /// * `msg_binary` - The padded binary message
-    ///
-    /// # Returns
-    /// A nested array
-    fn generate_message_blocks(msg_binary: &str) -> Vec<Vec<String>> {
-        //Parse the padded message into N 512-bit blocks.
-        let n_512_bit_blocks: Vec<String> = msg_binary
-            .chars()
-            .collect::<Vec<_>>()
+    /// It's assumed that the constants `BLOCK_SIZE` and `CHUNK_SIZE` are set to 64 and 4 respectively to align with SHA-256 specifications.
+    fn generate_message_blocks(msg_pad: Vec<u8>) -> Vec<Vec<Vec<u8>>> {
+        msg_pad
             .chunks(BLOCK_SIZE)
-            .map(|chunk| chunk.iter().collect::<String>())
-            .collect();
-
-        // Further parse each 512-bit block, into sixteen 32-bit blocks.
-        n_512_bit_blocks
-            .iter()
             .map(|block| {
                 block
-                    .chars()
-                    .collect::<Vec<_>>()
                     .chunks(CHUNK_SIZE)
-                    .map(|chunk| chunk.iter().collect::<String>())
+                    .map(|chunk| chunk.to_vec())
                     .collect()
             })
             .collect()
@@ -135,37 +109,28 @@ pub mod preprocess {
         use super::*;
 
         const MESSAGE: &str = "hello world";
-        const MSG_TO_BINARY: &str = "0110100001100101011011000110110001101111001000000111011101101111011100100110110001100100";
-
-        const PADDED_MESSAGE: &str = "01101000011001010110110001101100011011110010000001110111011011110111001001101100011001001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001011000";
 
         #[test]
         fn pad_message() {
-            let binary = convert_msg_to_binary(MESSAGE);
-            assert_eq!(binary, MSG_TO_BINARY);
-
-            let padded_binary = pad_binary(&binary);
-            assert_eq!(padded_binary, PADDED_MESSAGE);
+            let padded_msg = initial_sha256_padding(MESSAGE);
+            assert_eq!(padded_msg.len(), 64);
         }
 
         #[test]
-        fn parse_blocks() {
-            let n_512_blocks = generate_message_blocks(&PADDED_MESSAGE);
+        fn process_message() {
+            let padded_msg = initial_sha256_padding(MESSAGE);
 
-            assert_eq!(n_512_blocks.len(), PADDED_MESSAGE.len() / 512);
+            assert_eq!(padded_msg.len(), 64);
 
-            for block in n_512_blocks {
-                assert_eq!(block.len(), 16);
-                for word in block {
-                    assert_eq!(word.len(), 32);
+            let msg_blocks = generate_message_blocks(padded_msg);
+
+            for msg_block in msg_blocks {
+                assert_eq!(msg_block.len(), 16);
+
+                for block in msg_block {
+                    assert_eq!(block.len(), 4);
                 }
             }
-        }
-
-        #[test]
-        fn preprocess() {
-            let result = preprocess_message(MESSAGE);
-            println!("result:: {:?}", result);
         }
     }
 }
