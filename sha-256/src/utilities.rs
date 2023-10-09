@@ -79,14 +79,6 @@ pub fn add_mod_2_32(a: [u8; 4], b: [u8; 4]) -> [u8; 4] {
     sum.to_be_bytes()
 }
 
-fn bit_index_to_decimal(index: u32) -> Option<u32> {
-    if index < 32 {
-        Some(1 << index)
-    } else {
-        None
-    }
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;

@@ -10,9 +10,12 @@ pub mod preprocess {
     const CHUNK_SIZE: usize = 4;
 
     #[derive(Debug)]
+    /// Represents the result of the preprocessing step in XYZ algorithm.
     pub struct PreprocessResult {
         pub initial_hash_value: String,
-        pub preprocessed_msg: Vec<Vec<Vec<u8>>>,
+
+        /// The message after preprocessing, divided into blocks.
+        pub preprocessed_msg: Vec<[[u8; 4]; 16]>,
     }
 
     /// Converts a message to binary and pads the binary to SHA-256 specifications.
@@ -76,30 +79,29 @@ pub mod preprocess {
         buffer
     }
 
-    /// Splits the padded message into blocks suitable for SHA-256 processing.
+    /// Parses a padded message for SHA-256 processing.
     ///
-    /// The message, after padding, is divided into multiple 512-bit blocks.
-    /// Each 512-bit block is further divided into sixteen 32-bit word blocks.
+    /// The function divides the message into N blocks of 512 bits each (64 bytes).
+    /// Each of these blocks is further parsed into sixteen 32-bit (4 bytes) blocks.
     ///
     /// # Arguments
-    ///
-    /// * `msg_pad` - A `Vec<u8>` containing the message after SHA-256 padding.
+    /// * `msg_pad` - The padded message to be processed.
     ///
     /// # Returns
-    ///
-    /// A `Vec<Vec<u8>>` where the outer vector contains 512-bit blocks, and each inner vector represents a 32-bit word block.
-    ///
-    /// # Notes
-    ///
-    /// It's assumed that the constants `BLOCK_SIZE` and `CHUNK_SIZE` are set to 64 and 4 respectively to align with SHA-256 specifications.
-    fn generate_message_blocks(msg_pad: Vec<u8>) -> Vec<Vec<Vec<u8>>> {
+    /// A vector of 512-bit blocks, where each block is an array of sixteen 4-byte arrays.
+    fn generate_message_blocks(msg_pad: Vec<u8>) -> Vec<[[u8; 4]; 16]> {
         msg_pad
             .chunks(BLOCK_SIZE)
             .map(|block| {
-                block
-                    .chunks(CHUNK_SIZE)
-                    .map(|chunk| chunk.to_vec())
-                    .collect()
+                let mut array_block: [[u8; 4]; 16] = Default::default();
+
+                for (i, chunk) in block.chunks(CHUNK_SIZE).enumerate() {
+                    array_block[i] = match chunk {
+                        &[a, b, c, d] => [a, b, c, d],
+                        _ => panic!("Expected a chunk of size 4!"),
+                    };
+                }
+                array_block
             })
             .collect()
     }
