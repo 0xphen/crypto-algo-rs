@@ -12,6 +12,7 @@
 ///
 /// # Returns
 /// A 4-byte array representing the shifted number.
+#[inline]
 pub fn rotr(input: [u8; 4], n: usize) -> [u8; 4] {
     // Ensure n is in range [0, 31] for predictable behavior.
     let n = n % 32;
@@ -26,6 +27,37 @@ pub fn rotr(input: [u8; 4], n: usize) -> [u8; 4] {
     shifted.to_be_bytes()
 }
 
+/// Performs a bitwise AND operation between two 4-byte arrays.
+///
+/// # Arguments
+/// * `a` - The first byte array.
+/// * `b` - The second byte array.
+///
+/// # Returns
+/// A new byte array that is the result of the AND operation.
+#[inline]
+pub fn and(a: [u8; 4], b: [u8; 4]) -> [u8; 4] {
+    (u32::from_be_bytes(a) & u32::from_be_bytes(b)).to_be_bytes()
+}
+
+/// Performs a bitwise XOR operation between two 4-byte arrays.
+///
+/// # Arguments
+/// * `a` - The first 4-byte array.
+/// * `b` - The second 4-byte array.
+///
+/// # Returns
+/// A new 4-byte array that is the result of the XOR operation.
+#[inline]
+pub fn xor(a: [u8; 4], b: [u8; 4]) -> [u8; 4] {
+    (u32::from_be_bytes(a) ^ u32::from_be_bytes(b)).to_be_bytes()
+}
+
+#[inline]
+pub fn not(arr: [u8; 4]) -> [u8; 4] {
+    (!u32::from_be_bytes(arr)).to_be_bytes()
+}
+
 /// Performs a right shift on a 32-bit number represented as a byte array.
 ///
 /// # Parameters
@@ -34,6 +66,7 @@ pub fn rotr(input: [u8; 4], n: usize) -> [u8; 4] {
 ///
 /// # Returns
 /// A 4-byte array representing the shifted 32-bit number.
+#[inline]
 pub fn shr(input: [u8; 4], n: usize) -> [u8; 4] {
     let n = n % 32;
     let shifted = u32::from_be_bytes(input) >> n;
@@ -51,6 +84,7 @@ pub fn shr(input: [u8; 4], n: usize) -> [u8; 4] {
 ///
 /// A new byte array of length 4 where each byte is the result of
 /// the XOR operation on corresponding bytes of `a` and `b`.
+#[inline]
 pub fn add_mod_2(a: [u8; 4], b: [u8; 4]) -> [u8; 4] {
     let mut result = [0u8; 4];
     for i in 0..4 {
@@ -67,6 +101,7 @@ pub fn add_mod_2(a: [u8; 4], b: [u8; 4]) -> [u8; 4] {
 ///
 /// # Returns:
 /// - A big-endian byte array representing the sum of `a` and `b`, modulo 2^32.
+#[inline]
 pub fn add_mod_2_32(a: [u8; 4], b: [u8; 4]) -> [u8; 4] {
     // Convert byte arrays to u32 integers in big-endian format
     let num_a = u32::from_be_bytes(a);
@@ -107,9 +142,21 @@ mod tests {
         assert_eq!(result, [12, 14, 40, 8]);
     }
 
-    // #[test]
-    // fn mod_32() {
-    //     let result = add_mod_2_32([1, 143, 233, 5], [82, 101, 104, 66]);
-    //     assert_eq!(result, [83, 245, 81, 71]);
-    // }
+    #[test]
+    fn and_a_b() {
+        let result = and([1, 143, 233, 5], [82, 101, 104, 66]);
+        assert_eq!(result, [0, 5, 104, 0]);
+    }
+
+    #[test]
+    fn xor_a_b() {
+        let result = xor([1, 143, 233, 5], [82, 101, 104, 66]);
+        assert_eq!(result, [83, 234, 129, 71]);
+    }
+
+    #[test]
+    fn not_a() {
+        let result = not([1, 143, 233, 5]);
+        assert_eq!(result, [254, 112, 22, 250]);
+    }
 }

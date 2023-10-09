@@ -1,15 +1,10 @@
-// These initial hash values were obtained by taking the first 32 bits
+// An array of initial hash values. They were obtained by taking the first 32 bits
 // of the fractional parts of the square roots of the first
 // eight prime numbers. They are hardcoded and have been
 // defined by NIST (https://csrc.nist.gov/pubs/fips/180-4/upd1/final).
-pub const H_0: &'static str = "6a09e667";
-pub const H_1: &'static str = "bb67ae85";
-pub const H_2: &'static str = "3c6ef372";
-pub const H_3: &'static str = "a54ff53a";
-pub const H_4: &'static str = "510e527f";
-pub const H_5: &'static str = "9b05688c";
-pub const H_6: &'static str = "1f83d9ab";
-pub const H_7: &'static str = "5be0cd19";
+pub const H: [&'static str; 8] = [
+    "6a09e667", "bb67ae85", "3c6ef372", "a54ff53a", "510e527f", "9b05688c", "1f83d9ab", "5be0cd19",
+];
 
 // A set of constants (k) which will be used to mix
 // into the hex digest. They are the first 32 bits of

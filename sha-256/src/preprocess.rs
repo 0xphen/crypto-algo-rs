@@ -108,7 +108,7 @@ pub mod preprocess {
     /// # Panics
     /// Panics if the input string `h` is not 8 characters long,
     /// or if the string cannot be converted to a byte array.
-    pub fn h_to_byte_array(h: &str) -> [u8; 4] {
+    pub fn hex_to_byte_array(h: &str) -> [u8; 4] {
         if h.len() != 8 {
             panic!("Constant {:?} has wrong length", h);
         }
@@ -127,6 +127,7 @@ pub mod preprocess {
     #[cfg(test)]
     mod tests {
         use super::*;
+        use crate::constants;
 
         const MESSAGE: &str = "hello world";
 
@@ -151,6 +152,12 @@ pub mod preprocess {
                     assert_eq!(block.len(), 4);
                 }
             }
+        }
+
+        #[test]
+        fn convert_h() {
+            let bytes = hex_to_byte_array(constants::H[0]);
+            assert_eq!(bytes, [106, 9, 230, 103]);
         }
     }
 }
