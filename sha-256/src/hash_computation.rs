@@ -142,8 +142,7 @@ pub mod compression {
         [a, b, c, d, e, f, g, h]
     }
 
-    /// Computes the final hash value for a given set of intermediate hash values.
-    ///
+    /// Computes the digest from a given set of intermediate hash values.
     /// This function adds each compressed chunk to its corresponding current hash value
     /// from the provided intermediate hash matrix (`ihm`). It then appends all the resulting
     /// hash values together to form a byte array representing the final hash.
@@ -159,7 +158,7 @@ pub mod compression {
     /// # Panics
     ///
     /// Panics if the provided `ihm` array does not have the expected size.
-    fn compute_hash(ihm: [[u8; 4]; 8]) -> [u8; 32] {
+    fn compute_digest(ihm: [[u8; 4]; 8]) -> [u8; 32] {
         // Initialize a default hash matrix.
         let mut h: [[u8; 4]; 8] = Default::default();
 
