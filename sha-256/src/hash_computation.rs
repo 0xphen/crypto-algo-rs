@@ -36,10 +36,12 @@ pub mod message_schedule {
                         16..=63 => {
                             let ssig1 = MessageSchedule::ssig1(block[t - 2]);
                             let ssig0 = MessageSchedule::ssig0(block[t - 15]);
+
                             let w_1 = block[t - 7];
                             let w_2 = block[t - 16];
 
                             let mut w = utilities::add_mod_2(ssig1, ssig0);
+
                             w = utilities::add_mod_2_32(w, w_1);
                             utilities::add_mod_2_32(w, w_2)
                         }
@@ -84,13 +86,11 @@ pub mod message_schedule {
 }
 
 pub mod compression {
-    use std::error::Error;
-
     use super::message_schedule::MessageSchedule;
-    use crate::preprocess::preprocess::hex_to_byte_array;
-    use crate::utilities::{add_mod_2_32, and, not, rotr, xor};
 
     use crate::constants::{H, K};
+    use crate::preprocess::preprocess::hex_to_byte_array;
+    use crate::utilities::{add_mod_2_32, and, not, rotr, xor};
 
     /// Performs the SHA-256 compression on a given message schedule.
     ///
@@ -158,7 +158,7 @@ pub mod compression {
     /// # Panics
     ///
     /// Panics if the provided `ihm` array does not have the expected size.
-    fn compute_digest(ihm: [[u8; 4]; 8]) -> [u8; 32] {
+    pub fn compute_bytes_digest(ihm: [[u8; 4]; 8]) -> [u8; 32] {
         // Initialize a default hash matrix.
         let mut h: [[u8; 4]; 8] = Default::default();
 
