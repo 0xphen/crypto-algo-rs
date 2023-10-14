@@ -162,6 +162,7 @@ impl MRPT {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use diffie_hellman_key_exchange::SimpleDiffieHellman;
 
     #[test]
     fn derive_k_and_m() {
@@ -182,9 +183,9 @@ mod tests {
 
     #[test]
     fn is_prime() {
-        let p = BigUint::from(61u32);
-        let is_prime = MRPT::is_prime(p);
+        let (_s, p) = SimpleDiffieHellman::generate_safe_prime_and_sophie_prime();
 
+        let is_prime = MRPT::is_prime(p);
         assert_eq!(is_prime, true);
     }
 
