@@ -3,5 +3,5 @@ resolver = "2"
 members = [
   "diffie-hellman-key-exchange",
   "miller-rabin-primality-test",
-  "sha-256"
+  "sha-256",
 ]
