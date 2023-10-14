@@ -10,9 +10,9 @@ List of symbols:
 
 | Algorithm  | Supported        |
 | -------------- | ------------------ |
-| Diffie-Hellman | :heavy_check_mark: |
-| SHA-256    | 🏗️           |
-| Miller-Rabin primality test | :heavy_check_mark: |
+| [Diffie-Hellman](https://github.com/0xphen/crypto-algo-rs/tree/main/diffie-hellman-key-exchange) | :heavy_check_mark: |
+| [SHA-256](https://github.com/0xphen/crypto-algo-rs/tree/main/sha-256)    | 🏗️           |
+|[Miller-Rabin primality test](https://github.com/0xphen/crypto-algo-rs/tree/main/miller-rabin-primality-test) | :heavy_check_mark: |
 | RSA (Rivest–Shamir–Adleman) | :x:          |
 | AES (Advanced Encryption Standard) | :x:           |
 | Elliptic Curve Cryptography | :x:          |
