@@ -23,16 +23,9 @@ mod utilities;
 ///
 /// # Returns
 /// A `String` containing the hexadecimal representation of the hash digest.
-///
-/// # Example
-/// ```
-/// let message = "Hello, world!";
-/// let digest = hash(message);
-/// println!("Digest: {}", digest);
-/// ```
 pub fn hash(message: &str) -> String {
     // Preprocess the message
-    let preprocessed_msg = preprocess::preprocess::preprocess_message(message);
+    let preprocessed_msg = preprocess::preprocess_message(message);
 
     // Create a message schedule
     let msg_schedule = hash_computation::message_schedule::MessageSchedule::new(preprocessed_msg);

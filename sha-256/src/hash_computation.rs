@@ -1,6 +1,6 @@
 pub mod message_schedule {
     use crate::constants;
-    use crate::preprocess::preprocess::*;
+    use crate::preprocess::*;
     use crate::utilities;
 
     #[derive(Debug)]
@@ -89,7 +89,7 @@ pub mod compression {
     use super::message_schedule::MessageSchedule;
 
     use crate::constants::{H, K};
-    use crate::preprocess::preprocess::hex_to_byte_array;
+    use crate::preprocess::hex_to_byte_array;
     use crate::utilities::{add_mod_2_32, and, not, rotr, xor};
 
     /// Performs the SHA-256 compression on a given message schedule.
@@ -209,7 +209,7 @@ pub mod compression {
 #[cfg(test)]
 mod test {
     use super::*;
-    use crate::preprocess::preprocess;
+    use crate::preprocess;
 
     #[test]
     fn init_message_schedule() {
