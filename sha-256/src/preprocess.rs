@@ -108,7 +108,13 @@ pub mod preprocess {
     /// # Panics
     /// Panics if the input string `h` is not 8 characters long,
     /// or if the string cannot be converted to a byte array.
-    pub fn hex_to_byte_array(h: &str) -> [u8; 4] {
+    pub fn hex_to_byte_array(hex: &str) -> [u8; 4] {
+        let mut h: &str = hex;
+
+        if hex.starts_with("0x") {
+            h = &hex[2..];
+        }
+
         if h.len() != 8 {
             panic!("Constant {:?} has wrong length", h);
         }
