@@ -17,6 +17,6 @@ List of symbols:
 | AES (Advanced Encryption Standard) | :x:           |
 | Elliptic Curve Cryptography | :x:          |
 | HMAC (Hash-based Message Authentication Code) | :x:          |
-| RSA | :x:          |
-
+| DES | :x:          |
+| Snow | :x:          |
 
