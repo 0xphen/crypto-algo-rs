@@ -4,4 +4,6 @@ members = [
   "diffie-hellman-key-exchange",
   "miller-rabin-primality-test",
   "sha-256",
+  "rsa",
+  "utils"
 ]
