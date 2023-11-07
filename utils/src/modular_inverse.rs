@@ -1,14 +1,16 @@
 use num_bigint::BigInt;
 use num_traits::{One, Zero};
 
+use super::relative_prime;
+
 pub fn mod_inverse(mut a: BigInt, mut m: BigInt) -> Option<BigInt> {
+    if !relative_prime::is_co_prime(&a, &m) {
+        return None;
+    }
+
     let m0 = m.clone();
     let mut y = BigInt::zero();
     let mut x = BigInt::one();
-
-    if m.is_one() {
-        return None;
-    } // Inverse does not exist if m is 1.
 
     while a > BigInt::one() {
         // q is quotient
