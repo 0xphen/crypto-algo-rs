@@ -45,9 +45,9 @@ impl RSA {
     /// Generates a random 1024-bit prime number for RSA key generation.
     fn gen_1024_prime() -> BigUint {
         let mut rng = thread_rng();
+        println!("Deriving 1024 bit prime...");
 
         loop {
-            println!("Deriving 1024 bit prime...");
             // Create a 128-byte buffer, which equates to 1024 bits.
             let mut bytes = [0u8; 128];
             rng.fill_bytes(&mut bytes);
