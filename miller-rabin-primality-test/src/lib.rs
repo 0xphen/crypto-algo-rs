@@ -1,17 +1,19 @@
+use std::ops::Div;
+
 use num_bigint::{BigInt, BigUint, ToBigInt};
 use num_traits::{Pow, Zero};
 
 pub struct MRPT;
 
 impl MRPT {
-    pub fn is_prime(p: BigUint) -> bool {
+    pub fn is_prime(p: &BigUint) -> bool {
         let one_biguint: BigUint = BigUint::from(1u32);
         let one_bigint: BigInt = BigInt::from(1u32);
         let negative_one_bigint: BigInt = BigInt::from(-1i32);
         let two_biguint: BigUint = BigUint::from(2u32);
 
         //Step 1: derive m and k
-        let (k, m) = MRPT::derive_k_and_m(&p);
+        let (k, m) = MRPT::derive_k_and_m(p);
 
         // step 2: select `a`
         // we choose any value of a in the range 1 < a < p - 1.
@@ -183,14 +185,14 @@ mod tests {
     fn is_prime() {
         let (_s, p) = SimpleDiffieHellman::generate_safe_prime_and_sophie_prime();
 
-        let is_prime = MRPT::is_prime(p);
+        let is_prime = MRPT::is_prime(&p);
         assert_eq!(is_prime, true);
     }
 
     #[test]
     fn not_prime() {
         let p = BigUint::from(88u32);
-        let is_prime = MRPT::is_prime(p);
+        let is_prime = MRPT::is_prime(&p);
 
         assert_eq!(is_prime, false);
     }

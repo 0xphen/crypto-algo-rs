@@ -3,9 +3,9 @@ use num_traits::{One, Zero};
 
 use super::relative_prime;
 
-pub fn mod_inverse(mut a: BigInt, mut m: BigInt) -> Option<BigInt> {
+pub fn mod_inverse(mut a: BigInt, mut m: BigInt) -> BigInt {
     if !relative_prime::is_co_prime(&a, &m) {
-        return None;
+        panic!("{:?} and {:?} are not not co-prime", a.clone(), m.clone());
     }
 
     let m0 = m.clone();
@@ -32,7 +32,7 @@ pub fn mod_inverse(mut a: BigInt, mut m: BigInt) -> Option<BigInt> {
         x += m0;
     }
 
-    Some(x)
+    x
 }
 
 #[cfg(test)]
@@ -44,6 +44,6 @@ mod tests {
     fn find_mod_inverse() {
         let a = 3.to_bigint().unwrap();
         let m = 11.to_bigint().unwrap();
-        assert_eq!(mod_inverse(a, m), Some(4.to_bigint().unwrap()));
+        assert_eq!(mod_inverse(a, m), 4.to_bigint().unwrap());
     }
 }
