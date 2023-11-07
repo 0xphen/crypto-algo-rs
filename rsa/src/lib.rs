@@ -24,8 +24,8 @@ impl RSA {
         let n: BigInt = (&p * &q).to_bigint().unwrap();
 
         // Calculate Euler's totient function, phi(n), which is (p-1)*(q-1).
-        // ϕ(N) is multiplicative. Since N = p * q
-        // Hence: ϕ(p * q) = ϕ(p) * ϕ(q)
+        // ϕ(N) is multiplicative. Since N = p * q,
+        // hence ϕ(p * q) = ϕ(p) * ϕ(q)
         let phi_n = (&p - 1) * (&q - 1);
 
         // Create BigInt from the constant exponent.
@@ -70,7 +70,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_rsa() {
+    fn simple_test() {
         let msg = BigInt::from(4i32);
 
         let rsa = RSA::new();
