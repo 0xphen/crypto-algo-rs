@@ -1,7 +1,7 @@
 use miller_rabin_primality_test::MRPT;
 use utils::{modular_inverse, relative_prime};
 
-use num_bigint::{BigInt, BigUint, Sign, ToBigInt};
+use num_bigint::{BigInt, BigUint, ToBigInt};
 use rand::{thread_rng, RngCore};
 
 // Public exponent used for RSA. 65537 is chosen because it's a Fermat prime and commonly used.
@@ -23,9 +23,9 @@ impl RSA {
         // Calculate the modulus n which is the product of p and q.
         let n: BigInt = (&p * &q).to_bigint().unwrap();
 
-        // ϕ(N) is multiplicative. Since N = p * q
-        // ϕ(p * q) = ϕ(p) * ϕ(q)
         // Calculate Euler's totient function, phi(n), which is (p-1)*(q-1).
+        // ϕ(N) is multiplicative. Since N = p * q
+        // Hence: ϕ(p * q) = ϕ(p) * ϕ(q)
         let phi_n = (&p - 1) * (&q - 1);
 
         // Create BigInt from the constant exponent.
