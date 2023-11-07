@@ -42,6 +42,14 @@ impl RSA {
         RSA { d, n, e }
     }
 
+    pub fn encrypt(&self, msg: &BigInt) -> BigInt {
+        BigInt::modpow(msg, &self.e, &self.n)
+    }
+
+    pub fn decrypt(&self, c: BigInt) -> BigInt {
+        BigInt::modpow(&c, &self.d, &self.n)
+    }
+
     /// Generates a random 1024-bit prime number for RSA key generation.
     fn gen_1024_prime() -> BigUint {
         let mut rng = thread_rng();
@@ -75,11 +83,8 @@ mod tests {
 
         let rsa = RSA::new();
 
-        // Encrypt message
-        let cipher_text = BigInt::modpow(&msg, &rsa.e, &rsa.n);
-
-        // Decrypt `cipher_text` using decryption key
-        let decrypted_msg = BigInt::modpow(&cipher_text, &rsa.d, &rsa.n);
+        let cipher_text = rsa.encrypt(&msg);
+        let decrypted_msg = rsa.decrypt(cipher_text);
 
         assert_eq!(msg, decrypted_msg);
     }
