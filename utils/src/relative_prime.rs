@@ -8,7 +8,7 @@ pub fn is_co_prime(a: &BigInt, b: &BigInt) -> bool {
 pub fn gcd(a: &BigInt, b: &BigInt) -> BigInt {
     let mut a = a.clone();
     let mut b = b.clone();
-    
+
     while !b.is_zero() {
         let r = &a % &b;
         a = b;
