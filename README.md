@@ -10,13 +10,12 @@ List of symbols:
 
 | Algorithm  | Supported        |
 | -------------- | ------------------ |
-| [Diffie-Hellman](https://github.com/0xphen/crypto-algo-rs/tree/main/diffie-hellman-key-exchange) | :heavy_check_mark: |
+| [ DHKE (Diffie-Hellman Key Exchange)](https://github.com/0xphen/crypto-algo-rs/tree/main/diffie-hellman-key-exchange) | :heavy_check_mark: |
 | [SHA-256](https://github.com/0xphen/crypto-algo-rs/tree/main/sha-256)    | 🏗️           |
 |[Miller-Rabin primality test](https://github.com/0xphen/crypto-algo-rs/tree/main/miller-rabin-primality-test) | :heavy_check_mark: |
 | RSA (Rivest–Shamir–Adleman) |  :heavy_check_mark:          |
 | AES (Advanced Encryption Standard) | 🏗️           |
 | Elliptic Curve Cryptography | :x:          |
-| HMAC (Hash-based Message Authentication Code) | :x:          |
-| DES | :x:          |
-| Snow | :x:          |
+| ECDSA | :x:          |
+| DHKE (Diffie-Hellman Key Exchange) Over ECC | :x:          |
 
