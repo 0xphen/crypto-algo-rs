@@ -31,7 +31,7 @@ impl MRPT {
             return true;
         }
 
-        return false;
+        false
     }
 
     /// Step 1: Derive the values for m and k
@@ -134,7 +134,7 @@ impl MRPT {
             itr += 1u32;
         }
 
-        return (b.to_bigint().unwrap(), k.clone());
+        (b.to_bigint().unwrap(), k.clone())
     }
 
     /// Checks if a number is congruent to another number
@@ -187,7 +187,7 @@ mod tests {
         let p = BigUint::from_str("154823050381372988570399262885440204608110300534297192133791372402911660932026135157689434817328914290255051904378749805281187263639000893455699642047789288853321004949956422959983077737155751244536875034150726435641191590535141933823257150272953756758065165886160111424297767499942877822618775977228550417951").unwrap();
 
         let is_prime = MRPT::is_prime(&p);
-        assert_eq!(is_prime, true);
+        assert!(is_prime);
     }
 
     #[test]
@@ -195,7 +195,7 @@ mod tests {
         let p = BigUint::from_str("49243873994706715196742252382556310127049594411677355423178284715981426058017479917868660129172191671290554383371170570965491637267886498576090551966215566761760145745567633443042874637926638272423855642677792331495042414651895115970251214844446494341991440373598820226323396861989684736485489824604642332830").unwrap();
 
         let is_prime = MRPT::is_prime(&p);
-        assert_eq!(is_prime, false);
+        assert!(!is_prime);
     }
 
     #[test]
@@ -206,6 +206,6 @@ mod tests {
             BigInt::from(2i32),
         );
 
-        assert_eq!(is_congruent, true);
+        assert!(is_congruent);
     }
 }

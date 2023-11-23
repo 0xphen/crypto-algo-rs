@@ -11,3 +11,4 @@ num-bigint = { version = "0.4.4", features = ["rand"] }
 num-traits = "0.2.17"
 miller-rabin-primality-test = {path = "../miller-rabin-primality-test"}
 rand = "0.8.5"
+rayon = "1.8.0"

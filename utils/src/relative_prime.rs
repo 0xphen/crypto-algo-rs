@@ -26,6 +26,6 @@ mod tests {
     fn check_co_prime() {
         let a = 3.to_bigint().unwrap();
         let b = 11.to_bigint().unwrap();
-        assert_eq!(is_co_prime(&a, &b), true);
+        assert!(is_co_prime(&a, &b));
     }
 }

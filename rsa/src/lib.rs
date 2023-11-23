@@ -2,7 +2,9 @@ use miller_rabin_primality_test::MRPT;
 use utils::{modular_inverse, relative_prime};
 
 use num_bigint::{BigInt, BigUint, ToBigInt};
+use num_traits::{One, Zero};
 use rand::{thread_rng, RngCore};
+use rayon::prelude::*;
 
 // Public exponent used for RSA. 65537 is chosen because it's a Fermat prime and commonly used.
 const E: u64 = 65537;
@@ -13,12 +15,23 @@ pub struct RSA {
     pub e: BigInt, // The public exponent.
 }
 
+impl Default for RSA {
+    fn default() -> Self {
+        RSA::new()
+    }
+}
+
 impl RSA {
     /// Constructs a new RSA instance with generated keys.
     pub fn new() -> Self {
         // Generate two distinct primes, p and q, for RSA.
-        let p = Self::gen_1024_prime().to_bigint().unwrap();
-        let q = Self::gen_1024_prime().to_bigint().unwrap();
+        let primes: Vec<_> = (0..2)
+            .into_par_iter()
+            .map(|_| Self::gen_1024_prime())
+            .collect();
+
+        let p = primes[0].to_bigint().unwrap();
+        let q = primes[1].to_bigint().unwrap();
 
         // Calculate the modulus n which is the product of p and q.
         let n: BigInt = (&p * &q).to_bigint().unwrap();
@@ -81,7 +94,7 @@ mod tests {
     fn simple_test() {
         let msg = BigInt::from(4i32);
 
-        let rsa = RSA::new();
+        let rsa = RSA::default();
 
         let cipher_text = rsa.encrypt(&msg);
         let decrypted_msg = rsa.decrypt(cipher_text);
