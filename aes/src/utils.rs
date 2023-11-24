@@ -11,12 +11,23 @@ pub fn xor_matrices(a: [[u8; 4]; 4], b: [[u8; 4]; 4]) -> [[u8; 4]; 4] {
     new_state
 }
 
+pub fn rotate_left(matrix: &[u8; 4], n: usize) -> [u8; 4] {
+    let n = n % matrix.len(); // Skip redundant rotations.
+    let mut new_matrix: [u8; 4] = [0; 4];
+
+    let (left, right) = matrix.split_at(n);
+    new_matrix[..right.len()].copy_from_slice(right);
+    new_matrix[right.len()..].copy_from_slice(left);
+
+    new_matrix
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
 
     #[test]
-    fn test() {
+    fn test_xor_matrices() {
         let a: [[u8; 4]; 4] = [
             [184, 3, 184, 3],
             [186, 159, 186, 159],
@@ -42,5 +53,11 @@ mod tests {
                 [25, 37, 122, 70]
             ]
         );
+    }
+
+    #[test]
+    fn test_rotate_left() {
+        let result = rotate_left(&[1, 2, 3, 4], 3);
+        assert_eq!(result, [4, 1, 2, 3]);
     }
 }
