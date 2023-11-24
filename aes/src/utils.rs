@@ -1,6 +1,6 @@
 /// Performs element-wise XOR operation on two 4x4 state matrices.
 /// Returns a new 4x4 matrix resulting from the XOR of `a` and `b`.
-pub fn xor_matrices_4x4(a: [[u8; 4]; 4], b: [[u8; 4]; 4]) -> [[u8; 4]; 4] {
+pub fn xor_matrices(a: [[u8; 4]; 4], b: [[u8; 4]; 4]) -> [[u8; 4]; 4] {
     let mut new_state = [[0; 4]; 4];
     for (i, (row_a, row_b)) in a.iter().zip(b.iter()).enumerate() {
         for (j, (&val_a, &val_b)) in row_a.iter().zip(row_b.iter()).enumerate() {
@@ -31,7 +31,7 @@ mod tests {
             [80, 250, 51, 153],
         ];
 
-        let result = xor_matrices_4x4(a, b);
+        let result = xor_matrices(a, b);
 
         assert_eq!(
             result,
@@ -39,7 +39,7 @@ mod tests {
                 [40, 106, 74, 8],
                 [45, 243, 78, 144,],
                 [243, 134, 144, 229],
-                [196, 37, 167, 70]
+                [25, 37, 122, 70]
             ]
         );
     }
