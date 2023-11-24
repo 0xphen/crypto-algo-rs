@@ -5,7 +5,7 @@ use super::relative_prime;
 
 pub fn mod_inverse(mut a: BigInt, mut m: BigInt) -> BigInt {
     if !relative_prime::is_co_prime(&a, &m) {
-        panic!("{:?} and {:?} are not not co-prime", a.clone(), m.clone());
+        panic!("{:?} and {:?} are not not co-prime", a, m);
     }
 
     let m0 = m.clone();
@@ -17,7 +17,7 @@ pub fn mod_inverse(mut a: BigInt, mut m: BigInt) -> BigInt {
         let q = &a / &m;
         let mut t = m.clone();
 
-        // m is remainder now, process same as Euclid's algo
+        // m is remainder now, process same as Euclid's algorithm
         m = a % &m;
         a = t;
         t = y.clone();
