@@ -69,10 +69,8 @@ impl AES {
     /// by their row index (1 to 3 positions).
     fn shift_rows(&mut self) {
         let mut new_state = [[0u8; 4]; 4];
-
         // Copy the first row as is
         new_state[0] = self.state[0];
-
         // Shift the remaining rows
         for i in 1..=3 {
             new_state[i] = rotate_left(&self.state[i], i);
@@ -112,7 +110,6 @@ mod tests {
     #[test]
     fn test_shift_rows() {
         let mut aes = AES::new(&PK, &INPUT).unwrap();
-        println!("STATE: {:?}", aes.state);
         aes.shift_rows();
 
         assert_eq!(
