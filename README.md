@@ -3,19 +3,10 @@ This repository contains Rust 🦀 implementations of certain cryptographic algo
 ## List of cryptography algorithms
 This list contains cryptographic primitives and mathematical structures that I want to implement.
 
-List of symbols:
-- :heavy_check_mark: means the algorithm is implemented.
-- 🏗️ means that the algorithm is partially implemented or is under active construction.
-- :x: means that the algorithm is not currently implemented.
-
-| Algorithm  | Supported        |
-| -------------- | ------------------ |
-| [DHKE (Diffie-Hellman Key Exchange)](https://github.com/0xphen/crypto-algo-rs/tree/main/diffie-hellman-key-exchange) | :heavy_check_mark: |
-| [SHA-256](https://github.com/0xphen/crypto-algo-rs/tree/main/sha-256)    | 🏗️           |
-|[Miller-Rabin primality test](https://github.com/0xphen/crypto-algo-rs/tree/main/miller-rabin-primality-test) | :heavy_check_mark: |
-| [RSA (Rivest–Shamir–Adleman)](https://github.com/0xphen/crypto-algo-rs/tree/main/rsa) |  :heavy_check_mark:          |
-| AES (Advanced Encryption Standard) | 🏗️           |
-| ECC (Elliptic Curve Cryptography) | :x:          |
-| ECDSA | :x:          |
-| DHKE (Diffie-Hellman Key Exchange) over ECC | :x:          |
-
+- [X] [DHKE (Diffie-Hellman Key Exchange)](https://github.com/0xphen/crypto-algo-rs/tree/main/diffie-hellman-key-exchange)
+- [X] [SHA-256](https://github.com/0xphen/crypto-algo-rs/tree/main/sha-256) 
+- [X] [Miller-Rabin primality test](https://github.com/0xphen/crypto-algo-rs/tree/main/miller-rabin-primality-test)
+- [X] [RSA (Rivest–Shamir–Adleman)](https://github.com/0xphen/crypto-algo-rs/tree/main/rsa)
+- [ ] AES (Advanced Encryption Standard)
+- [ ] ECC (Elliptic Curve Cryptography)
+- [ ] ECDSA
