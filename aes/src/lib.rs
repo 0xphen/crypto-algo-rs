@@ -1,13 +1,11 @@
+mod constants;
 mod error;
 mod key_schedule;
-mod s_box;
 mod utils;
 
-use rayon::prelude::*;
-
+use constants::*;
 use error::AesError;
 use key_schedule::*;
-use s_box::AES_S_BOX;
 use utils::*;
 
 #[derive(Debug)]
@@ -56,7 +54,7 @@ impl AES {
         // Iterate over each byte of the state matrix
         for (i, row) in self.state.iter().enumerate() {
             for (j, &e) in row.iter().enumerate() {
-                // Apply the S-box transformation and store in new_state
+                // Apply the S-box transformation and store in `new_state`
                 new_state[j][i] = AES_S_BOX[e as usize];
             }
         }
@@ -78,11 +76,38 @@ impl AES {
 
         self.state = new_state;
     }
+
+    /// Applies the MixColumns transformation to the AES state matrix.
+    /// This transformation is a key step in the AES encryption process, where each column
+    /// of the state matrix is mixed to produce a new state. It involves performing
+    /// Galois Field multiplication of predefined matrix values with the current state.
+    fn mix_columns(&mut self) {
+        let mut new_state: [[u8; 4]; 4] = [[0u8; 4]; 4];
+
+        for r in 0..4 {
+            for c in 0..4 {
+                // Compute the new value for each cell in the new state matrix.
+                // This is done by XORing the results of Galois Field multiplication
+                // of each element in the predefined matrix with the corresponding
+                // element in the current state matrix.
+                new_state[r][c] = (0..4).fold(0, |acc, i| {
+                    acc ^ galois_mul(PRE_DEFINED_MATRIX[r][i], self.state[i][c])
+                })
+            }
+        }
+
+        self.state = new_state;
+    }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    use lazy_static::lazy_static;
+    use serial_test::serial;
+
+    use std::sync::Mutex;
 
     const INPUT: [u8; 16] = [
         40, 106, 74, 8, 45, 243, 78, 144, 243, 134, 144, 229, 196, 37, 167, 70,
@@ -91,9 +116,16 @@ mod tests {
         83, 165, 133, 154, 74, 213, 132, 2, 117, 219, 45, 35, 95, 132, 207, 167,
     ];
 
+    lazy_static! {
+        static ref AES_INSTANCE: Mutex<AES> = Mutex::new(AES::new(&PK, &INPUT).unwrap());
+    }
+
     #[test]
+    #[serial]
     fn test_substitution() {
-        let mut aes = AES::new(&PK, &INPUT).unwrap();
+        let mut aes_guard = AES_INSTANCE.lock().unwrap();
+        let aes = &mut *aes_guard;
+
         aes.sub_bytes();
 
         assert_eq!(
@@ -108,17 +140,35 @@ mod tests {
     }
 
     #[test]
+    #[serial]
     fn test_shift_rows() {
-        let mut aes = AES::new(&PK, &INPUT).unwrap();
-        aes.shift_rows();
+        let mut aes_guard = AES_INSTANCE.lock().unwrap();
+        aes_guard.shift_rows();
 
         assert_eq!(
-            aes.state,
+            aes_guard.state,
             [
-                [40, 45, 243, 196],
-                [243, 134, 37, 106],
-                [144, 167, 74, 78],
-                [70, 8, 144, 229]
+                [52, 2, 214, 48],
+                [13, 47, 96, 216],
+                [96, 217, 13, 68],
+                [90, 28, 63, 92]
+            ]
+        );
+    }
+
+    #[test]
+    #[serial]
+    fn test_mix_columns() {
+        let mut aes_guard = AES_INSTANCE.lock().unwrap();
+        aes_guard.mix_columns();
+
+        assert_eq!(
+            aes_guard.state,
+            [
+                [71, 64, 163, 76],
+                [55, 212, 112, 159],
+                [148, 228, 58, 66],
+                [237, 165, 166, 188]
             ]
         );
     }
