@@ -7,4 +7,7 @@ pub enum AesError {
 
     #[error("Invalid bits size. Expected 128 got `{0}`")]
     InvalidBitsSize(usize),
+
+    #[error("Fauled to convert matrix to fixed size")]
+    KeyMatrixConversionError,
 }

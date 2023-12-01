@@ -19,3 +19,5 @@ pub const AES_S_BOX: [u8; 256] = [
 
 pub const PRE_DEFINED_MATRIX: [[u8; 4]; 4] =
     [[2, 3, 1, 1], [1, 2, 3, 1], [1, 1, 2, 3], [3, 1, 1, 2]];
+
+pub const ROUND_CONSTANT_128: [u8; 10] = [1, 2, 4, 8, 16, 32, 64, 128, 27, 54];

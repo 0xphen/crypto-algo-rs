@@ -1,3 +1,16 @@
+/// Generates a 4x4 matrix from an array of 16 bytes
+pub fn gen_matrix(bytes: &[u8; 16]) -> [[u8; 4]; 4] {
+    let mut matrix = [[0; 4]; 4];
+
+    for (i, chunk) in bytes.chunks(4).enumerate() {
+        for (j, &byte) in chunk.iter().enumerate() {
+            matrix[j][i] = byte;
+        }
+    }
+
+    matrix
+}
+
 /// Performs element-wise XOR operation on two 4x4 state matrices.
 /// Returns a new 4x4 matrix resulting from the XOR of `a` and `b`.
 pub fn xor_matrices(a: [[u8; 4]; 4], b: [[u8; 4]; 4]) -> [[u8; 4]; 4] {
@@ -9,6 +22,15 @@ pub fn xor_matrices(a: [[u8; 4]; 4], b: [[u8; 4]; 4]) -> [[u8; 4]; 4] {
     }
 
     new_state
+}
+
+pub fn xor_array(a: [u8; 4], b: [u8; 4]) -> [u8; 4] {
+    let mut result = [0u8; 4];
+    for i in 0..4 {
+        result[i] = a[i] ^ b[i];
+    }
+
+    result
 }
 
 #[inline]
