@@ -4,7 +4,7 @@ pub fn gen_matrix(bytes: &[u8; 16]) -> [[u8; 4]; 4] {
 
     for (i, chunk) in bytes.chunks(4).enumerate() {
         for (j, &byte) in chunk.iter().enumerate() {
-            matrix[j][i] = byte;
+            matrix[i][j] = byte;
         }
     }
 
