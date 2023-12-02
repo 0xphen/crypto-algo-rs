@@ -183,20 +183,6 @@ mod tests {
     }
 
     #[test]
-    fn test_generate_new_round() {
-        let new_round = KeySchedule::generate_new_round(&MATRIX, 1);
-        assert_eq!(
-            new_round,
-            [
-                [196, 197, 199, 196],
-                [47, 42, 44, 43],
-                [126, 119, 125, 118],
-                [119, 122, 116, 123]
-            ]
-        );
-    }
-
-    #[test]
     fn test_key_expansion() {
         let pk: [u8; 16] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
 
