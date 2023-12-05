@@ -49,9 +49,11 @@ impl KeySchedule {
         }
     }
 
+    /// Retrieves the round key for a specific AES encryption round.
     pub fn round_key(&self, round: usize) -> [[u8; 4]; 4] {
         let mut key: [[u8; 4]; 4] = [[0; 4]; 4];
-        key.copy_from_slice(&self.keys[round..(round + 4)]);
+        let start = round * 4;
+        key.copy_from_slice(&self.keys[start..(start + 4)]);
 
         key
     }

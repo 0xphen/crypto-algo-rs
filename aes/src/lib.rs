@@ -26,6 +26,35 @@ impl AES {
         })
     }
 
+    /// Encrypts the current state using the AES encryption algorithm.
+    ///
+    /// This method follows the standard AES encryption process, including
+    /// the initial round key addition, main rounds of encryption, and the final round.
+    /// The state is modified in place and then returned.
+    ///
+    /// # Returns
+    /// The encrypted state as a 4x4 matrix of bytes.
+    pub fn encrypt(&mut self) -> [[u8; 4]; 4] {
+        let rounds = self.key_schedule.rounds;
+        // Add initial round key
+        self.add_round_key(self.key_schedule.round_key(0));
+
+        // Main encryption rounds
+        for round in 1..(rounds) {
+            self.sub_bytes();
+            self.shift_rows();
+            self.mix_columns();
+            self.add_round_key(self.key_schedule.round_key(round as usize));
+        }
+
+        //Final round without mixing columns
+        self.sub_bytes();
+        self.shift_rows();
+        self.add_round_key(self.key_schedule.round_key(rounds as usize));
+
+        self.state
+    }
+
     fn add_round_key(&mut self, key: [[u8; 4]; 4]) {
         self.state = xor_matrices(self.state, key)
     }
@@ -113,7 +142,23 @@ mod tests {
     const PK: [u8; 16] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
 
     #[test]
-    fn aes_encryption() {
+    fn test_encrypt() {
+        let mut aes = AES::new(&PK, &INPUT).unwrap();
+        let cipher_bytes = aes.encrypt();
+
+        assert_eq!(
+            cipher_bytes,
+            [
+                [105, 196, 224, 216],
+                [106, 123, 4, 48],
+                [216, 205, 183, 128],
+                [112, 180, 197, 90]
+            ]
+        );
+    }
+
+    #[test]
+    fn initial_round_key_and_one_round_test() {
         let mut aes = AES::new(&PK, &INPUT).unwrap();
 
         aes.add_round_key(aes.key_schedule.round_key(0));
