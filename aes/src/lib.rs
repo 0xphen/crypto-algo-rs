@@ -74,26 +74,31 @@ impl AES {
         }
     }
 
-    /// Applies the MixColumns transformation to the AES state matrix.
-    /// This transformation is a key step in the AES encryption process, where each column
-    /// of the state matrix is mixed to produce a new state. It involves performing
-    /// Galois Field multiplication of predefined matrix values with the current state.
+    /// Performs the MixColumns transformation on the AES state.
+    ///
+    /// This function applies the MixColumns step to each column of the AES state matrix.
+    /// It uses the Galois Field multiplication (`galois_mul`) for the transformation.
+    ///
+    /// # Arguments
+    /// * `&mut self` - A mutable reference to the AES structure, containing the state matrix.
     fn mix_columns(&mut self) {
-        let mut new_state: [[u8; 4]; 4] = [[0u8; 4]; 4];
+        for col in 0..4 {
+            // Temporary storage for the column being processed
+            let mut temp_column = [0u8; 4];
 
-        for r in 0..4 {
-            for c in 0..4 {
-                // Compute the new value for each cell in the new state matrix.
-                // This is done by XORing the results of Galois Field multiplication
-                // of each element in the predefined matrix with the corresponding
-                // element in the current state matrix.
-                new_state[r][c] = (0..4).fold(0, |acc, i| {
-                    acc ^ galois_mul(PRE_DEFINED_MATRIX[r][i], self.state[i][c])
-                })
+            // Transform the current column using Galois Field multiplication
+            for i in 0..4 {
+                temp_column[i] = galois_mul(TRANSFORMATION_MATRIX[i][0], self.state[col][0])
+                    ^ galois_mul(TRANSFORMATION_MATRIX[i][1], self.state[col][1])
+                    ^ galois_mul(TRANSFORMATION_MATRIX[i][2], self.state[col][2])
+                    ^ galois_mul(TRANSFORMATION_MATRIX[i][3], self.state[col][3]);
+            }
+
+            // Update the state matrix with the transformed column
+            for i in 0..4 {
+                self.state[col][i] = temp_column[i];
             }
         }
-
-        self.state = new_state;
     }
 }
 
@@ -144,15 +149,15 @@ mod tests {
             ]
         );
 
-        // aes.mix_columns();
-        // assert_eq!(
-        //     aes.state,
-        //     [
-        //         [95, 114, 100, 21],
-        //         [87, 245, 188, 146],
-        //         [247, 190, 59, 41],
-        //         [29, 185, 249, 26]
-        //     ]
-        // );
+        aes.mix_columns();
+        assert_eq!(
+            aes.state,
+            [
+                [95, 114, 100, 21],
+                [87, 245, 188, 146],
+                [247, 190, 59, 41],
+                [29, 185, 249, 26]
+            ]
+        );
     }
 }

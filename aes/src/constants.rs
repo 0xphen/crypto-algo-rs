@@ -17,7 +17,7 @@ pub const AES_S_BOX: [u8; 256] = [
     0x8c, 0xa1, 0x89, 0x0d, 0xbf, 0xe6, 0x42, 0x68, 0x41, 0x99, 0x2d, 0x0f, 0xb0, 0x54, 0xbb, 0x16,
 ];
 
-pub const PRE_DEFINED_MATRIX: [[u8; 4]; 4] =
+pub const TRANSFORMATION_MATRIX: [[u8; 4]; 4] =
     [[2, 3, 1, 1], [1, 2, 3, 1], [1, 1, 2, 3], [3, 1, 1, 2]];
 
 pub const ROUND_CONSTANT_128: [u8; 10] = [1, 2, 4, 8, 16, 32, 64, 128, 27, 54];
