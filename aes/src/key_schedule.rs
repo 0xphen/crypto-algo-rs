@@ -172,12 +172,6 @@ impl KeySchedule {
 mod tests {
     use super::*;
 
-    const PK: [u8; 16] = [
-        144, 151, 52, 80, 105, 108, 207, 250, 242, 244, 87, 51, 11, 15, 172, 153,
-    ];
-
-    const MATRIX: [[u8; 4]; 4] = [[0, 1, 2, 3], [4, 5, 6, 7], [8, 9, 10, 11], [12, 13, 14, 15]];
-
     #[test]
     fn test_g_function() {
         let new_word = KeySchedule::g_function([1, 2, 3, 4], 1);

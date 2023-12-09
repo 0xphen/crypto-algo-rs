@@ -1,3 +1,6 @@
+pub mod definitions;
+pub mod padding;
+
 mod constants;
 mod error;
 mod key_schedule;
@@ -133,6 +136,7 @@ impl AES {
 
 #[cfg(test)]
 mod tests {
+    // Test Vectors: http://www.herongyang.com/Cryptography/AES-Example-Vector-of-AES-Encryption.html
     use super::*;
 
     const INPUT: [u8; 16] = [
