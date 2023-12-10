@@ -90,6 +90,17 @@ impl<'k> AesEncryptor for CbcEncryptor<'k> {
         Ok(encrypted_blocks)
     }
 
+    /// Decrypts the given ciphertext using AES in CBC mode.
+    ///
+    /// # Arguments
+    /// * `cipher_bytes` - A slice of bytes representing the ciphertext to decrypt.
+    ///
+    /// # Returns
+    /// A `Result` containing a vector of decrypted plaintext bytes,
+    /// or an `AesError` if the ciphertext is invalid or decryption fails.
+    ///
+    /// # Errors
+    /// Returns `AesError::InvalidCipherText` if the length of `cipher_bytes` is not a multiple of 16.
     fn decrypt(&mut self, cipher_bytes: &[u8]) -> Result<Vec<u8>, AesError> {
         if cipher_bytes.len() % 16 != 0 {
             return Err(AesError::InvalidCipherText);
