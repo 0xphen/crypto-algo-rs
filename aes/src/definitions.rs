@@ -1,7 +1,8 @@
 use super::error::AesError;
 
 pub trait AesEncryptor {
-    fn encrypt(&mut self, message: &[u8]) -> Result<Vec<[[u8; 4]; 4]>, AesError>;
+    fn encrypt(&mut self, input: &[u8]) -> Result<Vec<[[u8; 4]; 4]>, AesError>;
+    fn decrypt(&mut self, cipher_bytes: &[u8]) -> Result<Vec<u8>, AesError>;
 }
 
 /// Trait for padding processing in cryptographic operations.

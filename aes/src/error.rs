@@ -16,4 +16,7 @@ pub enum AesError {
 
     #[error("Failed to parse slice to matrix: {0}")]
     FailedToParseSliceToMatrix(String),
+
+    #[error("Invalid cipher text")]
+    InvalidCipherText,
 }
