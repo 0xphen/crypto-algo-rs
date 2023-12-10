@@ -56,19 +56,68 @@ impl CbcEncryptor {
     }
 }
 
-// impl AesEncryptor for CbcEncryptor {
-//     fn encrypt(&mut self, message: &[u8]) -> Vec<u8> {
-//         let mut plain_bytes = message.to_vec();
-//         PkcsPadding.pad_input(&mut plain_bytes);
+impl AesEncryptor for CbcEncryptor {
+    /// Encrypts a message using AES with CBC mode and PKCS padding.
+    ///
+    /// This function encrypts the given message using the AES encryption algorithm in CBC mode.
+    /// PKCS padding is applied to the message to ensure proper block sizing.
+    ///
+    /// # Arguments
+    /// * `message` - A slice of bytes representing the plaintext message to be encrypted.
+    ///
+    /// # Returns
+    /// A `Result` containing a vector of encrypted 4x4 byte matrices (`Vec<[[u8; 4]; 4]>`)
+    /// on success, or an `AesError` on failure.
+    fn encrypt(&mut self, message: &[u8]) -> Result<Vec<[[u8; 4]; 4]>, AesError> {
+        // Convert the message to a byte vector and apply PKCS padding
+        let mut plain_bytes = message.to_vec();
+        PkcsPadding.pad_input(&mut plain_bytes);
 
-//         let input_block = chunk_bytes_into_quads(&plain_bytes);
-//         let mut state = xor_matrix_with_array(&input_block[0..3].to_vec(), self.iv);
-//         let mut encrypted_blocks: Vec<[u8; 4]> = vec![[0u8; 4]; input_block.len()];
+        // Chunk the padded message into 4x4 byte matrices
+        let input_blocks = chunk_bytes_into_4x4_matrices(&plain_bytes);
 
-//         for _ in 1..(input_block.len() / 4) {
-//             AesOps::encrypt(&mut state, &self.keys);
-//         }
+        // Initialize the working state by XORing the first block with the IV
+        let mut working_state = xor_matrices(input_blocks[0], self.iv);
 
-//         todo!();
-//     }
-// }
+        let mut encrypted_blocks = Vec::with_capacity(input_blocks.len());
+
+        for block in input_blocks {
+            AesOps::encrypt(&mut working_state, &self.keys);
+            encrypted_blocks.push(working_state);
+            working_state = xor_matrices(working_state, block);
+        }
+
+        Ok(encrypted_blocks)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    const INPUT: [u8; 16] = [
+        0, 17, 34, 51, 68, 85, 102, 119, 136, 153, 170, 187, 204, 221, 238, 255,
+    ];
+
+    const PK: [u8; 16] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
+
+    const IV: [u8; 16] = [
+        102, 71, 120, 83, 87, 100, 53, 57, 65, 89, 100, 105, 81, 88, 90, 83,
+    ];
+
+    #[test]
+    fn test_cbc_encryption() {
+        let mut cbc_ops = CbcEncryptor::new(&PK, PkcsPadding).unwrap();
+        cbc_ops.iv =  gen_matrix(&IV);
+
+        let start_cipher_bytes: Vec<[[u8; 4]; 4]> = vec![[
+            [59, 67, 136, 134],
+            [79, 78, 189, 114],
+            [137, 150, 207, 148],
+            [186, 117, 130, 178],
+        ]];
+
+        let result = cbc_ops.encrypt(&INPUT).unwrap();
+        assert!(result.as_slice().starts_with(&start_cipher_bytes));
+    }
+}

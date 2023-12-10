@@ -1,7 +1,7 @@
 use super::{
     constants::{AES_S_BOX, TRANSFORMATION_MATRIX},
     key_schedule::KeySchedule,
-    util::{galois_mul, xor_matrices, xor_matrix_with_array},
+    util::{galois_mul, xor_matrices},
 };
 
 pub struct AesOps;

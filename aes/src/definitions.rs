@@ -1,5 +1,7 @@
+use super::error::AesError;
+
 pub trait AesEncryptor {
-    fn encrypt(&mut self, message: &[u8]) -> Vec<u8>;
+    fn encrypt(&mut self, message: &[u8]) -> Result<Vec<[[u8; 4]; 4]>, AesError>;
 }
 
 /// Trait for padding processing in cryptographic operations.

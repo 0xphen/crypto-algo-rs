@@ -13,4 +13,7 @@ pub enum AesError {
 
     #[error("Failed to generate IV")]
     IVGenerationError,
+
+    #[error("Failed to parse slice to matrix: {0}")]
+    FailedToParseSliceToMatrix(String),
 }
