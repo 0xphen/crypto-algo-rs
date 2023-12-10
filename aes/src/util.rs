@@ -52,15 +52,6 @@ pub fn xor_matrices(a: [[u8; 4]; 4], b: [[u8; 4]; 4]) -> [[u8; 4]; 4] {
     new_state
 }
 
-pub fn xor_array(a: [u8; 4], b: [u8; 4]) -> [u8; 4] {
-    let mut result = [0u8; 4];
-    for i in 0..4 {
-        result[i] = a[i] ^ b[i];
-    }
-
-    result
-}
-
 #[inline]
 pub fn rotate_left(matrix: &[u8; 4], n: usize) -> [u8; 4] {
     let n = n % matrix.len(); // Skip redundant rotations.
