@@ -7,6 +7,7 @@ edition = "2021"
 
 [dependencies]
 lazy_static = "1.4.0"
+rand = "0.8.5"
 rayon = "1.8.0"
 serial_test = "2.0.0"
 thiserror = "1.0.50"

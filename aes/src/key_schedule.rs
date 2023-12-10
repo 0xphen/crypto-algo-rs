@@ -1,4 +1,4 @@
-use super::{constants::*, error::AesError, utils::rotate_left};
+use super::{constants::*, error::AesError, util::rotate_left};
 
 const AES_KEY_SIZE_128: usize = 128 / 8;
 const AES_KEY_SIZE_192: usize = 192 / 8;

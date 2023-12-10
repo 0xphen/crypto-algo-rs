@@ -11,6 +11,34 @@ pub fn gen_matrix(bytes: &[u8; 16]) -> [[u8; 4]; 4] {
     matrix
 }
 
+/// Converts a byte vector into a vector of 4x4 byte matrices.
+///
+/// The input vector must have a length that is a multiple of 16.
+/// Panics if the length requirement is not met.
+///
+/// # Arguments
+/// * `bytes` - A reference to a vector of bytes (`Vec<u8>`).
+///
+/// # Returns
+/// A `Vec<[[u8; 4]; 4]>` where each element is a 4x4 byte matrix.
+pub fn chunk_bytes_into_4x4_matrices(bytes: &Vec<u8>) -> Vec<[[u8; 4]; 4]> {
+    if bytes.len() % 16 != 0 {
+        panic!("Input not a multiple of 16");
+    }
+
+    let mut buffer: Vec<[[u8; 4]; 4]> = Vec::with_capacity(bytes.len() / 16);
+
+    for chunk in bytes.chunks(16) {
+        let mut matrix = [[0u8; 4]; 4];
+        for (i, row) in chunk.chunks(4).enumerate() {
+            matrix[i] = row.try_into().expect("Slice with incorrect length");
+        }
+        buffer.push(matrix);
+    }
+
+    buffer
+}
+
 /// Performs element-wise XOR operation on two 4x4 state matrices.
 /// Returns a new 4x4 matrix resulting from the XOR of `a` and `b`.
 pub fn xor_matrices(a: [[u8; 4]; 4], b: [[u8; 4]; 4]) -> [[u8; 4]; 4] {

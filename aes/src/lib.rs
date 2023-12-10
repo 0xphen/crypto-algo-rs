@@ -1,15 +1,17 @@
+pub mod aes_ops;
+pub mod block_modes;
 pub mod definitions;
-pub mod padding;
+pub mod pkcs_padding;
 
 mod constants;
 mod error;
 mod key_schedule;
-mod utils;
+mod util;
 
 use constants::*;
 use error::AesError;
 use key_schedule::*;
-use utils::*;
+use util::*;
 
 #[derive(Debug)]
 pub struct AES {
@@ -164,7 +166,6 @@ mod tests {
     #[test]
     fn initial_round_key_and_one_round_test() {
         let mut aes = AES::new(&PK, &INPUT).unwrap();
-
         aes.add_round_key(aes.key_schedule.round_key(0));
         assert_eq!(
             aes.state,
