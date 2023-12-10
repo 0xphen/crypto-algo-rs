@@ -24,3 +24,7 @@ pub enum PaddingScheme {
     /// Represents the PKSC padding scheme.
     PKSC,
 }
+
+pub enum BlockMode {
+    CBC,
+}

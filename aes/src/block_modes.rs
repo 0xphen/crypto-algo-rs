@@ -9,14 +9,14 @@ use super::{
     util::*,
 };
 
-pub struct CbcEncryptor {
+pub struct CbcEncryptor<'k> {
     pub state: Option<Vec<u8>>,
     pub padding_processor: Box<dyn PaddingProcessor>,
     pub iv: [[u8; 4]; 4],
-    keys: KeySchedule,
+    keys: &'k KeySchedule,
 }
 
-impl CbcEncryptor {
+impl<'k> CbcEncryptor<'k> {
     /// Generates a 16-byte initialization vector (IV) for AES encryption.
     ///
     /// This function uses a cryptographically secure random number generator (OsRng)
@@ -44,11 +44,11 @@ impl CbcEncryptor {
     /// The function initializes the key schedule for AES based on `pk`,
     /// sets the initial state and IV, and stores the padding processor.
     pub fn new<T: PaddingProcessor + 'static>(
-        pk: &[u8],
+        keys: &'k KeySchedule,
         padding_processor: T,
     ) -> Result<Self, AesError> {
         Ok(Self {
-            keys: KeySchedule::new(pk)?,
+            keys,
             state: None,
             iv: gen_matrix(&Self::gen_iv()),
             padding_processor: Box::new(padding_processor),
@@ -56,7 +56,7 @@ impl CbcEncryptor {
     }
 }
 
-impl AesEncryptor for CbcEncryptor {
+impl<'k> AesEncryptor for CbcEncryptor<'k> {
     /// Encrypts a message using AES with CBC mode and PKCS padding.
     ///
     /// This function encrypts the given message using the AES encryption algorithm in CBC mode.
@@ -99,16 +99,17 @@ mod tests {
         0, 17, 34, 51, 68, 85, 102, 119, 136, 153, 170, 187, 204, 221, 238, 255,
     ];
 
-    const PK: [u8; 16] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
-
     const IV: [u8; 16] = [
         102, 71, 120, 83, 87, 100, 53, 57, 65, 89, 100, 105, 81, 88, 90, 83,
     ];
 
     #[test]
     fn test_cbc_encryption() {
-        let mut cbc_ops = CbcEncryptor::new(&PK, PkcsPadding).unwrap();
-        cbc_ops.iv =  gen_matrix(&IV);
+        let key_schedule =
+            KeySchedule::new(&[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]).unwrap();
+
+        let mut cbc_ops = CbcEncryptor::new(&key_schedule, PkcsPadding).unwrap();
+        cbc_ops.iv = gen_matrix(&IV);
 
         let start_cipher_bytes: Vec<[[u8; 4]; 4]> = vec![[
             [59, 67, 136, 134],
