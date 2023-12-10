@@ -7,6 +7,6 @@ This list contains cryptographic primitives and mathematical structures that I w
 - [X] [SHA-256](https://github.com/0xphen/crypto-algo-rs/tree/main/sha-256) 
 - [X] [Miller-Rabin primality test](https://github.com/0xphen/crypto-algo-rs/tree/main/miller-rabin-primality-test)
 - [X] [RSA (Rivest–Shamir–Adleman)](https://github.com/0xphen/crypto-algo-rs/tree/main/rsa)
-- [X] [AES (Advanced Encryption Standard)]((https://github.com/0xphen/crypto-algo-rs/tree/main/aes))
+- [X] [AES (Advanced Encryption Standard)](https://github.com/0xphen/crypto-algo-rs/tree/main/aes)
 - [ ] ECC (Elliptic Curve Cryptography)
 - [ ] ECDSA
