@@ -1,5 +1,5 @@
 pub trait AesEncryptor {
-    fn encrypt(&mut self) -> Vec<u8>;
+    fn encrypt(&mut self, message: &[u8]) -> Vec<u8>;
 }
 
 /// Trait for padding processing in cryptographic operations.

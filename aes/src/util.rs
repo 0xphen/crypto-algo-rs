@@ -11,6 +11,44 @@ pub fn gen_matrix(bytes: &[u8; 16]) -> [[u8; 4]; 4] {
     matrix
 }
 
+/// Converts a vector of bytes into a vector of 4-byte arrays.
+///
+/// This function chunks the input bytes into arrays of four bytes each.
+/// It panics if the input vector's length is not a multiple of 4.
+///
+/// # Arguments
+/// * `bytes` - A reference to a vector of bytes (`Vec<u8>`).
+///
+/// # Returns
+/// A `Vec<[u8; 4]>` where each element is a 4-byte array from the input.
+pub fn chunk_bytes_into_quads(bytes: &Vec<u8>) -> Vec<[u8; 4]> {
+    if bytes.len() % 4 != 0 {
+        panic!("Input not a multiple of 4");
+    }
+
+    let mut buffer: Vec<[u8; 4]> = vec![[0u8; 4]; bytes.len() / 4];
+
+    for (i, chunk) in bytes.chunks(4).enumerate() {
+        for (j, &byte) in chunk.iter().enumerate() {
+            buffer[i][j] = byte;
+        }
+    }
+
+    buffer
+}
+
+/// Performs element-wise XOR between each row of a matrix `a` (Vec<[u8; 4]>) and a fixed-size array `b` ([[u8; 4]; 4]).
+pub fn xor_matrix_with_array(a: &Vec<[u8; 4]>, b: [[u8; 4]; 4]) -> Vec<[u8; 4]> {
+    let mut buffer: Vec<[u8; 4]> = vec![[0u8; 4]; a.len()];
+    for (i, (row_a, row_b)) in a.iter().zip(b.iter()).enumerate() {
+        for (j, (val_a, val_b)) in row_a.iter().zip(row_b.iter()).enumerate() {
+            buffer[i][j] = val_a ^ val_b;
+        }
+    }
+
+    buffer
+}
+
 /// Performs element-wise XOR operation on two 4x4 state matrices.
 /// Returns a new 4x4 matrix resulting from the XOR of `a` and `b`.
 pub fn xor_matrices(a: [[u8; 4]; 4], b: [[u8; 4]; 4]) -> [[u8; 4]; 4] {

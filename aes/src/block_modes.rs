@@ -1,6 +1,7 @@
 use rand::{rngs::OsRng, RngCore};
 
 use super::{
+    aes_ops::AesOps,
     definitions::{AesEncryptor, PaddingProcessor},
     error::AesError,
     key_schedule::KeySchedule,
@@ -60,6 +61,14 @@ impl CbcEncryptor {
 //         let mut plain_bytes = message.to_vec();
 //         PkcsPadding.pad_input(&mut plain_bytes);
 
-//         let init_block = xor_matrices(self.iv, b)
+//         let input_block = chunk_bytes_into_quads(&plain_bytes);
+//         let mut state = xor_matrix_with_array(&input_block[0..3].to_vec(), self.iv);
+//         let mut encrypted_blocks: Vec<[u8; 4]> = vec![[0u8; 4]; input_block.len()];
+
+//         for _ in 1..(input_block.len() / 4) {
+//             AesOps::encrypt(&mut state, &self.keys);
+//         }
+
+//         todo!();
 //     }
 // }
