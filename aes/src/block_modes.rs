@@ -82,12 +82,38 @@ impl<'k> AesEncryptor for CbcEncryptor<'k> {
         let mut encrypted_blocks = Vec::with_capacity(input_blocks.len());
 
         for block in input_blocks {
-            AesOps::encrypt(&mut working_state, &self.keys);
+            AesOps::encrypt(&mut working_state, self.keys);
             encrypted_blocks.push(working_state);
             working_state = xor_matrices(working_state, block);
         }
 
         Ok(encrypted_blocks)
+    }
+
+    fn decrypt(&mut self, cipher_bytes: &[u8]) -> Result<Vec<u8>, AesError> {
+        if cipher_bytes.len() % 16 != 0 {
+            return Err(AesError::InvalidCipherText);
+        }
+
+        let input_blocks = chunk_bytes_into_4x4_matrices(&cipher_bytes.to_vec());
+        let mut decrypted_blocks: Vec<[[u8; 4]; 4]> = Vec::with_capacity(input_blocks.len());
+
+        let mut working_block = self.iv;
+
+        for block in input_blocks {
+            let mut cipher_block = block;
+            AesOps::decrypt(&mut cipher_block, self.keys);
+
+            cipher_block = xor_matrices(cipher_block, working_block);
+            decrypted_blocks.push(cipher_block);
+            working_block = block;
+        }
+
+        Ok(decrypted_blocks
+            .into_iter()
+            .flat_map(|block| block.into_iter())
+            .flat_map(|row| row.into_iter())
+            .collect())
     }
 }
 
@@ -119,6 +145,15 @@ mod tests {
         ]];
 
         let result = cbc_ops.encrypt(&INPUT).unwrap();
+        println!("result: {:?}", result);
         assert!(result.as_slice().starts_with(&start_cipher_bytes));
+
+        let plain_bytes = cbc_ops
+            .decrypt(&[
+                59, 67, 136, 134, 79, 78, 189, 114, 137, 150, 207, 148, 186, 117, 130, 178, 17,
+                210, 7, 174, 109, 178, 129, 201, 24, 52, 14, 108, 136, 148, 142, 63,
+            ])
+            .unwrap();
+        println!("plain_bytes: {:?}", plain_bytes);
     }
 }
