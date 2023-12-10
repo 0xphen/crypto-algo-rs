@@ -1,6 +1,4 @@
-use rayon::iter::repeat;
-
-use super::definitions::PaddingScheme;
+use super::definitions::PaddingProcessor;
 
 const BLOCK_SIZE: usize = 16;
 
@@ -11,7 +9,7 @@ const BLOCK_SIZE: usize = 16;
 #[derive(Clone, Copy)]
 pub struct PkcsPadding;
 
-impl PaddingScheme for PkcsPadding {
+impl PaddingProcessor for PkcsPadding {
     /// Adds PKCS#7 padding to the input buffer.
     ///
     /// This method calculates the necessary number of padding bytes and appends
@@ -20,7 +18,7 @@ impl PaddingScheme for PkcsPadding {
     ///
     /// # Arguments
     /// * `input_buffer` - A mutable reference to a Vec<u8> representing the plaintext.
-    fn pad_input(input_buffer: &mut Vec<u8>) {
+    fn pad_input(&self, input_buffer: &mut Vec<u8>) {
         let pad_size = BLOCK_SIZE - (input_buffer.len() % BLOCK_SIZE);
         let padding: Vec<u8> = std::iter::repeat(pad_size as u8).take(pad_size).collect();
         input_buffer.extend(padding);
@@ -38,7 +36,7 @@ impl PaddingScheme for PkcsPadding {
     /// # Panics
     /// Panics if the length of `output_buffer` is not a multiple of `BLOCK_SIZE`,
     /// or if the padding bytes are incorrect.
-    fn strip_output(output_buffer: &mut Vec<u8>) {
+    fn strip_output(&self, output_buffer: &mut Vec<u8>) {
         if output_buffer.len() % BLOCK_SIZE != 0 {
             panic!(
                 "Invalid output size: length is not a multiple of {}.",
@@ -64,12 +62,15 @@ impl PaddingScheme for PkcsPadding {
 
 #[cfg(test)]
 mod tests {
+    use crate::pkcs_padding;
+
     use super::*;
 
     #[test]
     fn test_pad_input() {
         let mut input = vec![10; 10];
-        PkcsPadding::pad_input(&mut input);
+
+        PkcsPadding.pad_input(&mut input);
 
         let mut expected = vec![10; 10];
         expected.extend(vec![6; 6]);
@@ -79,22 +80,22 @@ mod tests {
     #[test]
     fn test_strip_input() {
         let mut input = vec![10; 10];
-        PkcsPadding::pad_input(&mut input);
+        PkcsPadding.pad_input(&mut input);
 
-        PkcsPadding::strip_output(&mut input);
+        PkcsPadding.strip_output(&mut input);
         assert_eq!(input, vec![10; 10]);
     }
 
     #[test]
     #[should_panic(expected = "Invalid output size: length is not a multiple of 16.")]
     fn test_strip_output_panic_on_invalid_output_size() {
-        PkcsPadding::strip_output(&mut vec![1;15]);
+        PkcsPadding.strip_output(&mut vec![1; 15]);
     }
 
     #[test]
     #[should_panic(expected = "Invalid padding: incorrect padding size.")]
     fn test_strip_output_panic_on_invalid_size() {
-        PkcsPadding::strip_output(&mut vec![17; 16]);
+        PkcsPadding.strip_output(&mut vec![17; 16]);
     }
 
     #[test]
@@ -103,12 +104,12 @@ mod tests {
         let mut output = vec![6; 6];
         output.extend(vec![16; 10]);
 
-        PkcsPadding::strip_output(&mut output);
+        PkcsPadding.strip_output(&mut output);
     }
 
     #[test]
     #[should_panic(expected = "Invalid padding: empty output buffer.")]
     fn test_strip_output_panic_on_empty_output() {
-        PkcsPadding::strip_output(&mut vec![]);
+        PkcsPadding.strip_output(&mut vec![]);
     }
 }
