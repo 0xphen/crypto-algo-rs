@@ -8,5 +8,5 @@ This list contains cryptographic primitives and mathematical structures that I w
 - [X] [Miller-Rabin primality test](https://github.com/0xphen/crypto-algo-rs/tree/main/miller-rabin-primality-test)
 - [X] [RSA (Rivest–Shamir–Adleman)](https://github.com/0xphen/crypto-algo-rs/tree/main/rsa)
 - [X] [AES (Advanced Encryption Standard)](https://github.com/0xphen/crypto-algo-rs/tree/main/aes)
-- [ ] ECC (Elliptic Curve Cryptography)
+- [ ] Homomorphic Encryption
 - [ ] ECDSA
