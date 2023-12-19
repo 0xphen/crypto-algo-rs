@@ -92,8 +92,8 @@ impl AesOps {
     /// * `s_box` - The S-box used for the transformation, either standard or inverse.
     fn sub_bytes(state: &mut [[u8; 4]; 4], s_box: [u8; 256]) {
         // Iterate over each byte of the state matrix
-        for (i, row) in state.iter_mut().enumerate() {
-            for (j, e) in row.iter_mut().enumerate() {
+        for row in state.iter_mut() {
+            for e in row.iter_mut() {
                 // Apply the S-box transformation and store in `new_state`
                 *e = s_box[*e as usize];
             }

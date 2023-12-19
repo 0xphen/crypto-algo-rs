@@ -44,7 +44,7 @@ impl RSA {
         // Create BigInt from the constant exponent.
         let e = BigInt::from(E);
 
-        // Check if e and phi_n are coprime, which they should be by the choice of e.
+        // Check if e and phi_n are co-prime, which they should be by the choice of e.
         if !relative_prime::is_co_prime(&phi_n, &e) {
             panic!("{} and {} are not co-prime", e, phi_n);
         }

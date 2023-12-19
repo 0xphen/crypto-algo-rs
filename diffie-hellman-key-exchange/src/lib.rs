@@ -84,9 +84,8 @@ mod tests {
 
         let bob_version_of_shared_secret = bob.calculate_shared_secret(&alice_public_key);
 
-        assert_eq!(
-            alice_version_of_shared_secret.eq(&bob_version_of_shared_secret),
-            true
+        assert!(
+            alice_version_of_shared_secret.eq(&bob_version_of_shared_secret)
         );
     }
 }
