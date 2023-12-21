@@ -2,7 +2,7 @@ use num_bigint::BigInt;
 
 // A tuple struct representing a point with two BigUint coordinates (x, y).
 
-#[derive(PartialEq, Debug)]
+#[derive(PartialEq, Debug, Clone)]
 pub struct Point(pub BigInt, pub BigInt);
 
 /// Represents a point on an elliptic curve.

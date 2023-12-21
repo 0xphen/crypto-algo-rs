@@ -72,12 +72,10 @@ impl EllipticCurve for SECP256K1 {
                 let denominator = BigInt::from(2u32) * &point.1;
 
                 // Slope
-                let lambda = (numerator * mod_inv(&denominator, &self.n)) % &self.n;
+                let slope = (numerator * mod_inv(&denominator, &self.n)) % &self.n;
 
-                let x3 = (lambda.pow(2) - (&point.0 * BigInt::from(2u32))) % &self.n;
-
-                let y3 = (lambda * (&point.0 - &x3) - &point.1) % &self.n;
-                let y3 = if y3 < BigInt::zero() { y3 + &self.n } else { y3 };
+                let (x3, y3) =
+                    derive_new_point_coordinates(&slope, &point.0, &point.0, &point.1, &self.n);
 
                 EccPoint::Finite(Point(x3, y3))
             }
@@ -86,8 +84,36 @@ impl EllipticCurve for SECP256K1 {
         }
     }
 
-    fn add_points(&self, a: &EccPoint, b: &EccPoint) -> EccPoint {
-        todo!();
+    /// Adds two points on an elliptic curve.
+    ///
+    /// Handles the addition of finite points and points at infinity. If the points are inverses,
+    /// returns the point at infinity.
+    ///
+    /// # Arguments
+    /// * `p1` - The first point as `EccPoint`.
+    /// * `p2` - The second point as `EccPoint`.
+    ///
+    /// # Returns
+    /// The result of the addition as `EccPoint`.
+    fn add_points(&self, p1: &EccPoint, p2: &EccPoint) -> EccPoint {
+        match (p1, p2) {
+            (EccPoint::Finite(p1), EccPoint::Finite(p2)) => {
+                if points_inverse(p1, p2) {
+                    return EccPoint::Infinity;
+                }
+
+                let numerator = (&p2.1 - &p1.1) % &self.n;
+                let denominator = &p2.0 - &p1.0;
+                let slope = (numerator * mod_inv(&denominator, &self.n)) % &self.n;
+
+                let (x3, y3) = derive_new_point_coordinates(&slope, &p1.0, &p2.0, &p1.1, &self.n);
+
+                EccPoint::Finite(Point(x3, y3))
+            }
+            (EccPoint::Finite(p1), EccPoint::Infinity) => EccPoint::Finite(p1.clone()),
+            (EccPoint::Infinity, EccPoint::Finite(p2)) => EccPoint::Finite(p2.clone()),
+            _ => EccPoint::Infinity,
+        }
     }
 }
 
@@ -115,5 +141,24 @@ mod tests {
         )));
 
         assert!(new_point == EccPoint::Finite(Point(BigInt::from(6i32), BigInt::from(3i32))));
+    }
+
+    #[test]
+    fn add_points_test() {
+        let p1 = Point(BigInt::from(6i32), BigInt::from(3i32));
+        let p2 = Point(BigInt::from(5i32), BigInt::from(1i32));
+
+        let mut new_point = MOCK_SECP256K1_CURVE
+            .add_points(&EccPoint::Finite(p1.clone()), &EccPoint::Finite(p2.clone()));
+
+        assert!(new_point == EccPoint::Finite(Point(BigInt::from(10i32), BigInt::from(6i32))));
+
+        new_point =
+            MOCK_SECP256K1_CURVE.add_points(&EccPoint::Finite(p1.clone()), &EccPoint::Infinity);
+        assert!(new_point == EccPoint::Finite(p1));
+
+        new_point =
+            MOCK_SECP256K1_CURVE.add_points(&EccPoint::Infinity, &EccPoint::Finite(p2.clone()));
+        assert!(new_point == EccPoint::Finite(p2));
     }
 }
