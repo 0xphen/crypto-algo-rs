@@ -14,6 +14,14 @@ pub enum EccPoint {
     Infinity,
 }
 
+/// Represents the supported elliptic curves.
+///
+/// # Variants
+/// * `Secp256k1` - Represents the secp256k1 curve.
+pub enum Curve {
+    Secp256k1,
+}
+
 /// Defines the behavior for an elliptic curve.
 pub trait EllipticCurve {
     // Adds two points on the elliptic curve and returns the resulting point.
