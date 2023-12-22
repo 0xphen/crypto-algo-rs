@@ -39,6 +39,7 @@ pub fn derive_new_point_coordinates(
     if x3 < BigInt::zero() {
         x3 += n;
     }
+
     let mut y3 = (slope * (p1_x - &x3) - p1_y) % n;
     if y3 < BigInt::zero() {
         y3 += n;

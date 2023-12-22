@@ -71,10 +71,10 @@ impl EllipticCurve for SECP256K1 {
                 let denominator = BigInt::from(2u32) * &point.1;
 
                 // Slope
-                let slope = (numerator * mod_inv(&denominator, &self.n)) % &self.n;
+                let lambda = (numerator * mod_inv(&denominator, &self.n)) % &self.n;
 
                 let (x3, y3) =
-                    derive_new_point_coordinates(&slope, &point.0, &point.0, &point.1, &self.n);
+                    derive_new_point_coordinates(&lambda, &point.0, &point.0, &point.1, &self.n);
 
                 EccPoint::Finite(Point(x3, y3))
             }
@@ -108,9 +108,9 @@ impl EllipticCurve for SECP256K1 {
 
                 let numerator = (&p2.1 - &p1.1) % &self.n;
                 let denominator = &p2.0 - &p1.0;
-                let slope = (numerator * mod_inv(&denominator, &self.n)) % &self.n;
+                let lambda = (numerator * mod_inv(&denominator, &self.n)) % &self.n;
 
-                let (x3, y3) = derive_new_point_coordinates(&slope, &p1.0, &p2.0, &p1.1, &self.n);
+                let (x3, y3) = derive_new_point_coordinates(&lambda, &p1.0, &p2.0, &p1.1, &self.n);
 
                 EccPoint::Finite(Point(x3, y3))
             }
