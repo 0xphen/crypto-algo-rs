@@ -1,10 +1,9 @@
-use std::ops::{Mul, Sub};
-
 use num_bigint::BigInt;
-use num_traits::{Num, One, Zero};
+use num_traits::{Num, Zero};
 
 use super::{definitions::*, util::*};
 
+// Secp256k1 domain parameters
 pub const X: &str = "79BE667EF9DCBBAC55A06295CE870B07029BFCDB2DCE28D959F2815B16F81798";
 pub const Y: &str = "483ADA7726A3C4655DA4FBFC0E1108A8FD17B448A68554199C47D08FFB10D4B8";
 pub const N: &str = "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFC2F";
@@ -98,7 +97,12 @@ impl EllipticCurve for SECP256K1 {
     fn add_points(&self, p1: &EccPoint, p2: &EccPoint) -> EccPoint {
         match (p1, p2) {
             (EccPoint::Finite(p1), EccPoint::Finite(p2)) => {
-                if points_inverse(p1, p2) {
+                // If `p1` and `p2` are inverse or symmetric over the x-axis,
+                // then adding both points will result in the point at infinity.
+                // Also, if `x1 == x2`, then it means that the line intersecting the two points is vertical.
+                // For elliptic curves, this means that the points `P` and `Q`` add up to the point at infinity,
+                // as there is no third intersection point with the curve.
+                if points_inverse(p1, p2) || p2.0 == p1.0 {
                     return EccPoint::Infinity;
                 }
 
@@ -120,6 +124,7 @@ impl EllipticCurve for SECP256K1 {
 #[cfg(test)]
 mod tests {
     use lazy_static::lazy_static;
+    use num_bigint::BigUint;
 
     use super::*;
 
@@ -145,8 +150,8 @@ mod tests {
 
     #[test]
     fn add_points_test() {
-        let p1 = Point(BigInt::from(6i32), BigInt::from(3i32));
-        let p2 = Point(BigInt::from(5i32), BigInt::from(1i32));
+        let p1 = Point(BigInt::from(5i32), BigInt::from(1i32));
+        let p2 = Point(BigInt::from(6i32), BigInt::from(3i32));
 
         let mut new_point = MOCK_SECP256K1_CURVE
             .add_points(&EccPoint::Finite(p1.clone()), &EccPoint::Finite(p2.clone()));
@@ -155,10 +160,36 @@ mod tests {
 
         new_point =
             MOCK_SECP256K1_CURVE.add_points(&EccPoint::Finite(p1.clone()), &EccPoint::Infinity);
-        assert!(new_point == EccPoint::Finite(p1));
+        assert!(new_point == EccPoint::Finite(p1.clone()));
 
         new_point =
             MOCK_SECP256K1_CURVE.add_points(&EccPoint::Infinity, &EccPoint::Finite(p2.clone()));
         assert!(new_point == EccPoint::Finite(p2));
+
+        new_point = MOCK_SECP256K1_CURVE.add_points(
+            &EccPoint::Finite(p1),
+            &EccPoint::Finite(Point(BigInt::from(5i32), BigInt::from(16i32))),
+        );
+
+        assert!(new_point == EccPoint::Infinity);
+    }
+
+    #[test]
+    fn scalar_mul_test() {
+        let mut new_point = scalar_mul(
+            BigUint::from(15u32),
+            &Point(BigInt::from(5i32), BigInt::from(1i32)),
+            &*MOCK_SECP256K1_CURVE,
+        );
+
+        assert!(new_point == EccPoint::Finite(Point(BigInt::from(3i32), BigInt::from(16i32))));
+
+        new_point = scalar_mul(
+            BigUint::from(19u32),
+            &Point(BigInt::from(5i32), BigInt::from(1i32)),
+            &*MOCK_SECP256K1_CURVE,
+        );
+
+        assert!(new_point == EccPoint::Infinity);
     }
 }
