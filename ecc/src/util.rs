@@ -59,7 +59,7 @@ pub fn derive_new_point_coordinates(
 ///   * `p`: A reference to the point on the elliptic curve to be multiplied. This point should be
 ///          a valid point on the provided curve.
 ///   * `ecc_curve`: A reference to the elliptic curve being used, which must implement the
-/// `EllipticCurve` trait.
+///                  `EllipticCurve` trait.
 ///
 /// Returns:
 ///   * An `EccPoint` representing the result of scalar multiplication of `p` by `k` on the elliptic curve.
