@@ -177,7 +177,7 @@ mod tests {
     #[test]
     fn scalar_mul_test() {
         let mut new_point = scalar_mul(
-            BigUint::from(15u32),
+            &[1, 1, 1, 1],
             &Point(BigInt::from(5i32), BigInt::from(1i32)),
             &*MOCK_SECP256K1_CURVE,
         );
@@ -185,7 +185,7 @@ mod tests {
         assert!(new_point == EccPoint::Finite(Point(BigInt::from(3i32), BigInt::from(16i32))));
 
         new_point = scalar_mul(
-            BigUint::from(19u32),
+            &[1, 0, 0, 1, 1],
             &Point(BigInt::from(5i32), BigInt::from(1i32)),
             &*MOCK_SECP256K1_CURVE,
         );

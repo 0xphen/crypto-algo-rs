@@ -49,22 +49,32 @@ pub fn derive_new_point_coordinates(
 }
 
 /// Performs scalar multiplication on an elliptic curve using the Montgomery Ladder algorithm.
-/// This method is preferred for its resistance to side-channel attacks.
+/// This method is preferred for its resistance to side-channel attacks, providing consistent
+/// execution time and memory access patterns to protect against certain types of attacks.
 ///
 /// Arguments:
-///   * `k`: The scalar value to multiply the point by.
-///   * `p`: The point on the elliptic curve to be multiplied.
-///   * `ecc_curve`: The elliptic curve being used, which implements the `EllipticCurve`` trait.
+///   * `k`: A reference to a vector of bytes representing the scalar value to multiply the point by.
+///          Each byte represents a part of the scalar, typically in big-endian order. This vector
+///          effectively represents the private key or scalar multiplier in binary form.
+///   * `p`: A reference to the point on the elliptic curve to be multiplied. This point should be
+///          a valid point on the provided curve.
+///   * `ecc_curve`: A reference to the elliptic curve being used, which must implement the
+/// `EllipticCurve` trait.
 ///
 /// Returns:
-///   * A point on the elliptic curve representing the scalar multiplication of `p` by `k`.
-pub fn scalar_mul(k: BigUint, p: &Point, ecc_curve: &impl EllipticCurve) -> EccPoint {
+///   * An `EccPoint` representing the result of scalar multiplication of `p` by `k` on the elliptic curve.
+///     The result is another point on the curve.
+///
+/// Note: This function assumes that `k` is provided in a big-endian byte order and the most significant
+///        bit  is the leftmost bit of the first byte in the vector. Ensure that `k` and `p`
+///        are valid and that `p` is indeed a point on the provided elliptic curve.  Improper inputs
+///        could lead to incorrect results or errors.
+pub fn scalar_mul(k: &[u8], p: &Point, ecc_curve: &impl EllipticCurve) -> EccPoint {
     let mut r_0 = EccPoint::Infinity;
     let mut r_1 = EccPoint::Finite(p.clone());
 
-    let b = format!("{:b}", k);
-    for bit in b.chars() {
-        if bit == '0' {
+    for &bit in k.iter() {
+        if bit == 0 {
             r_1 = ecc_curve.add_points(&r_0, &r_1);
             r_0 = ecc_curve.double_point(&r_0);
         } else {
@@ -74,6 +84,18 @@ pub fn scalar_mul(k: BigUint, p: &Point, ecc_curve: &impl EllipticCurve) -> EccP
     }
 
     r_0
+}
+
+pub fn bytes_to_binary(i: &[u8; 32], r: &mut Vec<u8>) {
+    for m in i.iter() {
+        format!("{:8b}", m).chars().for_each(|b| {
+            if b == '1' {
+                r.push(1);
+            } else {
+                r.push(0)
+            }
+        });
+    }
 }
 
 #[cfg(test)]
