@@ -1,6 +1,6 @@
 use std::ops::Add;
 
-use num_bigint::{BigInt, BigUint};
+use num_bigint::BigInt;
 use num_traits::Zero;
 
 use crate::definitions::{EccPoint, EllipticCurve};

@@ -54,9 +54,11 @@ mod tests {
 
         // Using the Rust crate `https://docs.rs/secp256k1/0.28.0/secp256k1/` as a test vector.
         let secp256k1_extern = Secp256k1::new();
+
         let secret_key = SecretKey::from_str(&priv_key).expect("32 bytes, within curve order");
 
         let pub_key = PublicKey::from_secret_key(&secp256k1_extern, &secret_key);
+
         let secp256k1_extern_uncompressed_pub_key = hex::encode(pub_key.serialize_uncompressed());
 
         assert!(format!("04{}", uncompressed_pub_key) == secp256k1_extern_uncompressed_pub_key);

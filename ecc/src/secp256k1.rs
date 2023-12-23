@@ -124,7 +124,6 @@ impl EllipticCurve for SECP256K1 {
 #[cfg(test)]
 mod tests {
     use lazy_static::lazy_static;
-    use num_bigint::BigUint;
 
     use super::*;
 
